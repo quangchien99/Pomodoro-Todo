@@ -8,6 +8,13 @@ import com.chpham.pomodoro_todo.databinding.FragmentPomodoroBinding
 
 class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>() {
 
+    companion object {
+
+        fun newInstance(): PomodoroFragment {
+            return PomodoroFragment()
+        }
+    }
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding? {
         return FragmentPomodoroBinding.inflate(layoutInflater, container, false)
     }

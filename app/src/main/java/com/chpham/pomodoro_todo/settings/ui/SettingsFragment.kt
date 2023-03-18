@@ -8,6 +8,13 @@ import com.chpham.pomodoro_todo.databinding.FragmentSettingsBinding
 
 class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
 
+    companion object {
+
+        fun newInstance(): SettingsFragment {
+            return SettingsFragment()
+        }
+    }
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentSettingsBinding.inflate(layoutInflater, container, false)
     }

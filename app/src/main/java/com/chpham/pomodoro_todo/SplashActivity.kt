@@ -15,7 +15,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
         const val ANIMATION_TIME: Long = 2000L
     }
 
-    override fun initViewBinding(): ViewBinding? {
+    override fun initViewBinding(): ViewBinding {
         return ActivitySplashBinding.inflate(layoutInflater)
     }
 

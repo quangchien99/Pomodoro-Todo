@@ -8,6 +8,13 @@ import com.chpham.pomodoro_todo.databinding.FragmentTodoBinding
 
 class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
+    companion object {
+
+        fun newInstance(): TodoListFragment {
+            return TodoListFragment()
+        }
+    }
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentTodoBinding.inflate(layoutInflater, container, false)
     }

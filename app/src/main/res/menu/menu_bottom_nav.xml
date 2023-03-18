@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/pomodoroFragment"
+        android:id="@+id/itemPomodoro"
         android:icon="@drawable/ic_pomodoro"
         android:title="@string/text_pomodoro" />
 
     <item
-        android:id="@+id/todoFragment"
+        android:id="@+id/itemTodoList"
         android:icon="@drawable/ic_todo_list"
         android:title="@string/text_todo" />
 
     <item
-        android:id="@+id/settingsFragment"
+        android:id="@+id/itemSettings"
         android:icon="@drawable/ic_settings"
         android:title="@string/text_settings" />
 </menu>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    height-->
+    <dimen name="height_60">60dp</dimen>
+    <dimen name="height_240">240dp</dimen>
+    <!--    height-->
+
+    <!--    width-->
+    <dimen name="width_240">240dp</dimen>
+    <!--    width-->
+
+    <!--    text size-->
+    <dimen name="text_size_32">32sp</dimen>
+    <!--    text size-->
+
+    <!--    margin-->
+    <dimen name="margin_120">120dp</dimen>
+    <!--    margin-->
+
+</resources>

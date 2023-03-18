@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Pomodoro Todo</string>
+
+    <!--    bottom nav item title-->
+    <string name="text_pomodoro">Pomodoro</string>
+    <string name="text_todo">Todo</string>
+    <string name="text_settings">Settings</string>
+    <!--    bottom nav item title-->
+
+    <!--    to do list fragment-->
+    <string name="text_empty_task">There is no tasks yet. Let\'s set to start our day.</string>
+    <!--    to do list fragment-->
+
+</resources>

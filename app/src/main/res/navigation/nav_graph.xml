@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/pomodoroFragment">
+
+    <fragment
+        android:id="@+id/pomodoroFragment"
+        android:name="com.chpham.pomodoro_todo.pomodoro.ui.PomodoroFragment"
+        android:label="pomodoro_fragment"
+        tools:layout="@layout/fragment_pomodoro" />
+
+    <fragment
+        android:id="@+id/todoFragment"
+        android:name="com.chpham.pomodoro_todo.todo.ui.TodoListFragment"
+        android:label="todo_fragment"
+        tools:layout="@layout/fragment_todo" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.chpham.pomodoro_todo.settings.ui.SettingsFragment"
+        android:label="settings_fragment"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

@@ -1,7 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/teal_200">
 
+    <ImageView
+        android:id="@+id/imgBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/rainy" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutPomodoro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp">
+
+        <LinearLayout
+            android:id="@+id/layoutModes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/tvTimer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/btnPomodoro"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="@dimen/width_120"
+                android:layout_height="@dimen/height_40"
+                android:background="@drawable/bg_btn_selected"
+                android:text="@string/text_btn_pomodoro"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnShortBreak"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="@dimen/width_120"
+                android:layout_height="@dimen/height_40"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_btn_unselected"
+                android:text="@string/text_btn_short_break"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnLongBreak"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="@dimen/width_120"
+                android:layout_height="@dimen/height_40"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_btn_unselected"
+                android:text="@string/text_btn_long_break"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_timer_25"
+            android:textColor="@color/white"
+            android:textSize="120sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/layoutController"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTimer">
+
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="@dimen/width_120"
+                android:layout_height="@dimen/height_40"
+                android:background="@drawable/bg_btn_selected"
+                android:text="@string/text_btn_start"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <ImageView
+                android:id="@+id/btnRestart"
+                android:layout_width="@dimen/width_40"
+                android:layout_height="@dimen/height_40"
+                android:layout_marginStart="@dimen/margin_8"
+                android:contentDescription="@string/text_restart_countdown"
+                android:padding="@dimen/padding_4"
+                android:rotation="90"
+                android:src="@drawable/ic_restart" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

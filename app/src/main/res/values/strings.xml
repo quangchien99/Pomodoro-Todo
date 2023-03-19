@@ -7,6 +7,18 @@
     <string name="text_settings">Settings</string>
     <!--    bottom nav item title-->
 
+    <!--    pomodoro fragment-->
+    <string name="text_btn_pomodoro">pomodoro</string>
+    <string name="text_btn_short_break">short break</string>
+    <string name="text_btn_long_break">long break</string>
+    <string name="text_restart_countdown">restart countdown</string>
+    <string name="text_btn_start">start</string>
+    <string name="text_btn_pause">pause</string>
+    <string name="text_timer_5">05:00</string>
+    <string name="text_timer_10">10:00</string>
+    <string name="text_timer_25">25:00</string>
+    <!--    to do list fragment-->
+
     <!--    to do list fragment-->
     <string name="text_empty_task">There is no tasks yet. Let\'s set to start our day.</string>
     <!--    to do list fragment-->

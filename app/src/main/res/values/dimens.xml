@@ -2,11 +2,14 @@
 <resources>
 
     <!--    height-->
+    <dimen name="height_40">40dp</dimen>
     <dimen name="height_60">60dp</dimen>
     <dimen name="height_240">240dp</dimen>
     <!--    height-->
 
     <!--    width-->
+    <dimen name="width_40">40dp</dimen>
+    <dimen name="width_120">120dp</dimen>
     <dimen name="width_240">240dp</dimen>
     <!--    width-->
 
@@ -18,4 +21,8 @@
     <dimen name="margin_120">120dp</dimen>
     <!--    margin-->
 
+    <!--    padding-->
+    <dimen name="padding_4">4dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <!--    padding-->
 </resources>

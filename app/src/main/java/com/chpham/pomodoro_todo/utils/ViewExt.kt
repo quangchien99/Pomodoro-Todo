@@ -19,7 +19,6 @@ import com.chpham.pomodoro_todo.R
  * Rotates this view 360 degrees around its center point.
  * @return Unit
  */
-
 fun View.rotateView() {
     val rotate = RotateAnimation(
         0f,

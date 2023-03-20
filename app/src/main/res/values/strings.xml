@@ -14,6 +14,7 @@
     <string name="text_restart_countdown">restart countdown</string>
     <string name="text_btn_start">start</string>
     <string name="text_btn_pause">pause</string>
+    <string name="text_btn_resume">resume</string>
     <string name="text_timer_5">05:00</string>
     <string name="text_timer_10">10:00</string>
     <string name="text_timer_25">25:00</string>

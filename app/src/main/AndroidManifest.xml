@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.BIND_FOREGROUND_SERVICE" />
+
     <application
         android:name=".PomodoroTodoApplication"
         android:allowBackup="true"
@@ -12,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PomodoroTodo"
         tools:targetApi="31">
+
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -21,7 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".HomeActivity" />
+
+        <service
+            android:name="com.chpham.data.service.timer.CountDownTimerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.chpham.pomotodo.ACTION_START_SERVICE_COUNT_DOWN" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

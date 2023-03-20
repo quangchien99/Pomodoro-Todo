@@ -23,6 +23,8 @@
 
     <!--    padding-->
     <dimen name="padding_4">4dp</dimen>
+    <dimen name="padding_8">8dp</dimen>
     <dimen name="margin_8">8dp</dimen>
+    <dimen name="height_200">200dp</dimen>
     <!--    padding-->
 </resources>

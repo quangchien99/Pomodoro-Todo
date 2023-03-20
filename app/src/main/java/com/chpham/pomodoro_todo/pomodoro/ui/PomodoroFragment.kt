@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.chpham.domain.timer.CountDownTimerState
+import com.chpham.pomodoro_todo.HomeActivity
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.base.ui.BaseFragment
 import com.chpham.pomodoro_todo.base.viewmodel.ViewModelFactory
@@ -40,6 +41,8 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
         R.id.btnShortBreak to PomodoroMode.MODE_SHORT_BREAK,
         R.id.btnLongBreak to PomodoroMode.MODE_LONG_BREAK
     )
+
+    private var isInFocus: Boolean? = null
 
     companion object {
         fun newInstance(): PomodoroFragment {
@@ -129,6 +132,7 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                 when (currentTimerState) {
                     CountDownTimerState.NotStarted -> {
                         viewModel.startCountDownTimer(currentMode.minutes.convertMinutesToSeconds())
+                        turnOnFocus()
                     }
                     CountDownTimerState.Started -> {
                         viewModel.restartCountDownTimer(
@@ -137,6 +141,7 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                         binding.btnStart.text = getString(R.string.text_btn_pause)
                         viewModel.resumeCountDownTimer()
                         currentTimerState = CountDownTimerState.Counting
+                        turnOnFocus()
                     }
                     CountDownTimerState.Finished -> {
                         viewModel.startCountDownTimer(
@@ -144,16 +149,19 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                         )
                         binding.btnStart.text = getString(R.string.text_btn_pause)
                         currentTimerState = CountDownTimerState.Counting
+                        turnOffFocus()
                     }
                     CountDownTimerState.Counting -> {
                         viewModel.pauseCountDownTimer()
                         currentTimerState = CountDownTimerState.Paused
                         binding.btnStart.text = getString(R.string.text_btn_resume)
+                        turnOffFocus()
                     }
                     CountDownTimerState.Paused -> {
                         viewModel.resumeCountDownTimer()
                         currentTimerState = CountDownTimerState.Counting
                         binding.btnStart.text = getString(R.string.text_btn_pause)
+                        turnOnFocus()
                     }
                     else -> {
                         //do nothing
@@ -161,6 +169,9 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                 }
             }
             R.id.btnRestart -> {
+                if (isInFocus == true) {
+                    turnOffFocus()
+                }
                 binding.btnRestart.rotateView()
                 if (currentTimerState != CountDownTimerState.NotStarted) {
                     binding.tvTimer.text = currentMode.minutes.getFormattedMinutes()
@@ -182,6 +193,32 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
         if (currentTimerState == CountDownTimerState.Counting || currentTimerState == CountDownTimerState.Paused) {
             viewModel.pauseCountDownTimer()
             currentTimerState = CountDownTimerState.Started
+        }
+        turnOffFocus()
+    }
+
+    private fun turnOnFocus() {
+        (activity as? HomeActivity)?.setFocusStatus(
+            shouldFocusing = true
+        )
+        isInFocus = true
+    }
+
+    private fun turnOffFocus() {
+        (activity as? HomeActivity)?.setFocusStatus(
+            shouldFocusing = false
+        )
+        isInFocus = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isInFocus?.let {
+            if (it) {
+                turnOnFocus()
+            } else {
+                turnOffFocus()
+            }
         }
     }
 }

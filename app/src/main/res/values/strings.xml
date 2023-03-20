@@ -5,6 +5,7 @@
     <string name="text_pomodoro">Pomodoro</string>
     <string name="text_todo">Todo</string>
     <string name="text_settings">Settings</string>
+    <string name="text_options">Options</string>
     <!--    bottom nav item title-->
 
     <!--    pomodoro fragment-->
@@ -22,6 +23,7 @@
 
     <!--    to do list fragment-->
     <string name="text_empty_task">There is no tasks yet. Let\'s set to start our day.</string>
+    <string name="text_sample_quote">“Either you run the day or the day runs you.” — Jim Rohn</string>
     <!--    to do list fragment-->
 
 </resources>

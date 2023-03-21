@@ -24,6 +24,11 @@
     <!--    to do list fragment-->
     <string name="text_empty_task">There is no tasks yet. Let\'s set to start our day.</string>
     <string name="text_sample_quote">“Either you run the day or the day runs you.” — Jim Rohn</string>
+    <string name="text_header_content">“Drag your %1$s tasks here”</string>
+    <string name="text_to_do_list">To do list</string>
+    <string name="text_previous">Previous</string>
+    <string name="text_today">Today</string>
+    <string name="text_next_7_days">Next 7 days</string>
     <!--    to do list fragment-->
 
 </resources>

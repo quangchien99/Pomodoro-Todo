@@ -50,5 +50,8 @@
     <dimen name="radius_16">16dp</dimen>
     <dimen name="width_160">160dp</dimen>
     <dimen name="text_size_20">20sp</dimen>
+    <dimen name="width_36">36dp</dimen>
+    <dimen name="width_88">88dp</dimen>
+    <dimen name="height_1">1dp</dimen>
     <!--    radius-->
 </resources>

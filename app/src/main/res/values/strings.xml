@@ -55,6 +55,15 @@
     <string name="text_weekly">Weekly</string>
     <string name="text_monthly">Monthly</string>
     <string name="text_repeat_every">Repeat every</string>
+    <string name="text_repeat_in">Repeat In</string>
+    <string name="text_repeat_end_in">Repeat end in</string>
+    <string name="text_sun">Sun</string>
+    <string name="text_sat">Sat</string>
+    <string name="text_fri">Fri</string>
+    <string name="text_thu">Thu</string>
+    <string name="text_wed">Wed</string>
+    <string name="text_tue">Tue</string>
+    <string name="text_mon">Mon</string>
     <!--    to do list fragment-->
 
 </resources>

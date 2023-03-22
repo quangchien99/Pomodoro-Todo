@@ -22,40 +22,42 @@
 
         <TextView
             android:id="@+id/tvDaily"
-            android:layout_width="88dp"
+            android:layout_width="@dimen/width_88"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_btn_date_unselected"
             android:gravity="center"
             android:text="@string/text_daily"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_size_16" />
 
         <TextView
             android:id="@+id/tvWeekly"
-            android:layout_width="88dp"
+            android:layout_width="@dimen/width_88"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:background="@drawable/bg_btn_date_unselected"
             android:gravity="center"
             android:text="@string/text_weekly"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_size_16" />
 
         <TextView
             android:id="@+id/tvMonthly"
-            android:layout_width="88dp"
+            android:layout_width="@dimen/width_88"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:background="@drawable/bg_btn_date_unselected"
             android:gravity="center"
             android:text="@string/text_monthly"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_size_16" />
 
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/layoutRepeatEvery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_16">
+        android:layout_marginTop="@dimen/margin_16"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tvRepeatEvery"
@@ -65,9 +67,11 @@
 
         <Spinner
             android:id="@+id/spinnerRepeatEvery"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_200"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:dropDownWidth="@dimen/width_120"
+            android:textAlignment="viewEnd" />
 
     </RelativeLayout>
 
@@ -76,78 +80,107 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_16">
+        android:layout_marginTop="@dimen/margin_16"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tvRepeatInWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Repeat In" />
+            android:text="@string/text_repeat_in" />
 
 
-        <LinearLayout
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvRepeatInWeek"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:scrollbars="none">
 
-            <TextView
-                android:id="@+id/tvMonday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@color/blueLight"
-                android:text="Mon" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_16"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvTuesday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Tue" />
+                <TextView
+                    android:id="@+id/tvMonday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_mon" />
 
-            <TextView
-                android:id="@+id/tvWednesday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Wed" />
+                <TextView
+                    android:id="@+id/tvTuesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_tue" />
 
-            <TextView
-                android:id="@+id/tvThursday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Thu" />
+                <TextView
+                    android:id="@+id/tvWednesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_wed" />
 
-            <TextView
-                android:id="@+id/tvFriday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Fri" />
+                <TextView
+                    android:id="@+id/tvThursday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_thu" />
 
-            <TextView
-                android:id="@+id/tvSaturday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Sat" />
+                <TextView
+                    android:id="@+id/tvFriday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_fri" />
 
-            <TextView
-                android:id="@+id/tvSunday"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="@dimen/margin_16"
-                android:background="@color/blueLight"
-                android:text="Sun" />
+                <TextView
+                    android:id="@+id/tvSaturday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_sat" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvSunday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_36"
+                    android:layout_marginStart="@dimen/margin_16"
+                    android:background="@drawable/bg_btn_date_unselected"
+                    android:gravity="center"
+                    android:minWidth="@dimen/width_36"
+                    android:minHeight="@dimen/height_36"
+                    android:text="@string/text_sun" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
 
     </RelativeLayout>
 
@@ -156,46 +189,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_16">
+        android:layout_marginTop="@dimen/margin_16"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tvRepeatInMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Repeat In" />
+            android:text="@string/text_repeat_in" />
 
         <Spinner
             android:id="@+id/spinnerRepeatIn"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_200"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:dropDownWidth="@dimen/width_120"
+            android:textAlignment="viewEnd" />
 
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/layoutRepeatEndIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_16">
+        android:layout_marginTop="@dimen/margin_16"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tvRepeatEnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Repeat end in" />
+            android:text="@string/text_repeat_end_in" />
 
         <Spinner
             android:id="@+id/spinnerRepeatEnd"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_200"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:dropDownWidth="@dimen/width_120"
+            android:textAlignment="viewEnd" />
 
     </RelativeLayout>
 
     <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/height_1"
         android:layout_marginHorizontal="@dimen/margin_16"
         android:layout_marginTop="@dimen/margin_8"
         android:background="#DDDDDD" />

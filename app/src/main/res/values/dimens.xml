@@ -48,5 +48,7 @@
     <!--    radius-->
     <dimen name="radius_8">8dp</dimen>
     <dimen name="radius_16">16dp</dimen>
+    <dimen name="width_160">160dp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
     <!--    radius-->
 </resources>

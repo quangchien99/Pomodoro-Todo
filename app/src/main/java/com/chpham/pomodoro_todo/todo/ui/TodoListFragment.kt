@@ -49,6 +49,13 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         initNext7DaysTasksRecyclerView()
         initObservers()
         initClickListener()
+
+        binding.fabAddTask.setOnClickListener {
+            val bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment()
+            activity?.supportFragmentManager?.let {
+                bottomSheetDialogFragment.show(it, CreateTaskBottomSheetDialogFragment.TAG)
+            }
+        }
     }
 
     private fun initCategoriesRecyclerView() {

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="280dp">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:fontFamily="@font/space_grotesk"
+        android:gravity="center"
+        android:text="@string/text_add_task"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_16"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edtTaskName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_64"
+        android:layout_below="@id/tvHeader"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_toStartOf="@id/btnAddTask"
+        android:background="@drawable/bg_edt_rounded"
+        android:hint="@string/text_create_new_task_here"
+        android:padding="@dimen/padding_16" />
+
+
+    <ImageView
+        android:id="@+id/btnAddTask"
+        android:layout_width="@dimen/width_40"
+        android:layout_height="@dimen/height_40"
+        android:layout_below="@id/tvHeader"
+        android:layout_alignBottom="@id/edtTaskName"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:layout_marginBottom="@dimen/margin_16"
+        android:src="@drawable/ic_create" />
+
+    <EditText
+        android:id="@+id/edtTaskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/edtTaskName"
+        android:layout_marginStart="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:background="@color/white"
+        android:hint="@string/text_description"
+        android:textSize="@dimen/text_size_16" />
+
+    <HorizontalScrollView
+        android:id="@+id/layoutOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edtTaskDescription"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:padding="@dimen/padding_4"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_4"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDay"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_36"
+                android:layout_marginTop="@dimen/margin_4"
+                android:layout_marginBottom="@dimen/margin_4"
+                android:background="@drawable/bg_btn_grey_border_rounded"
+                android:drawableLeft="@drawable/ic_calendar"
+                android:maxWidth="@dimen/width_160"
+                android:text="@string/text_today"
+                android:textAllCaps="false"
+                android:textColor="@color/green"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnCategory"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_36"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_btn_grey_border_rounded"
+                android:drawableLeft="@drawable/ic_category"
+                android:maxWidth="@dimen/width_160"
+                android:text="@string/text_category"
+                android:textAllCaps="false"
+                android:textColor="@color/gray"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnPriority"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_36"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_btn_grey_border_rounded"
+                android:drawableLeft="@drawable/ic_priority"
+                android:maxWidth="@dimen/width_160"
+                android:text="@string/text_priority"
+                android:textAllCaps="false"
+                android:textColor="@color/gray"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnReminder"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_36"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_btn_grey_border_rounded"
+                android:drawableLeft="@drawable/ic_alarm"
+                android:maxWidth="@dimen/width_160"
+                android:text="@string/text_reminder"
+                android:textAllCaps="false"
+                android:textColor="@color/gray"
+                android:textSize="12sp"
+                app:backgroundTint="@null" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/layoutOptions"
+        android:layout_marginTop="@dimen/margin_8"
+        android:background="@color/grey" />
+</RelativeLayout>

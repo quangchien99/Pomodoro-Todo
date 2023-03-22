@@ -28,7 +28,33 @@
     <string name="text_to_do_list">To do list</string>
     <string name="text_previous">Previous</string>
     <string name="text_today">Today</string>
+    <string name="text_tomorrow">Tomorrow</string>
     <string name="text_next_7_days">Next 7 days</string>
+    <string name="text_add_task">Add Task</string>
+    <string name="text_category">Category</string>
+    <string name="text_reminder">Reminder</string>
+    <string name="text_priority">Priority</string>
+    <string name="text_description">Description</string>
+    <string name="text_create_new_task_here">Create new task here</string>
+    <string name="text_time">Time</string>
+    <string name="text_none">None</string>
+    <string name="text_repeat">Repeat</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_confirm">Confirm</string>
+    <string name="text_set_up_deadline">Set up deadline</string>
+    <string name="text_remind_before">Remind before:</string>
+    <string name="text_3_hours">3 hours</string>
+    <string name="text_2_hours">2 hours</string>
+    <string name="text_1_hour">1 hour</string>
+    <string name="text_30_mins">30 mins</string>
+    <string name="text_15_mins">15 mins</string>
+    <string name="text_10_mins">10 mins</string>
+    <string name="text_5_mins">5 mins</string>
+    <string name="text_set_up_repetition">Set up repetition</string>
+    <string name="text_daily">Daily</string>
+    <string name="text_weekly">Weekly</string>
+    <string name="text_monthly">Monthly</string>
+    <string name="text_repeat_every">Repeat every</string>
     <!--    to do list fragment-->
 
 </resources>

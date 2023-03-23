@@ -16,7 +16,7 @@ class PrioritySpinnerAdapter(
     imageArray: Array<Int>
 ) : ArrayAdapter<String?>(
     context,
-    R.layout.layout_priority_spinner,
+    R.layout.item_spinner,
     R.id.imgSpinnerItemText,
     objects
 ) {
@@ -42,7 +42,7 @@ class PrioritySpinnerAdapter(
 
     private fun getCustomView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val row: View = inflater.inflate(R.layout.layout_priority_spinner, parent, false)
+        val row: View = inflater.inflate(R.layout.item_spinner, parent, false)
         val textView = row.findViewById(R.id.imgSpinnerItemText) as TextView
         textView.text = contentArray[position]
         val imageView: ImageView = row.findViewById(R.id.imgSpinnerItemIcon) as ImageView

@@ -6,12 +6,14 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -24,11 +26,12 @@ import com.chpham.pomodoro_todo.databinding.BottomSheetFragementAddTaskBinding
 import com.chpham.pomodoro_todo.databinding.LayoutDatePickerBinding
 import com.chpham.pomodoro_todo.databinding.LayoutRepeatOptionsBinding
 import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
+import com.chpham.pomodoro_todo.todo.ui.adapter.CategorySpinnerAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
 import com.chpham.pomodoro_todo.utils.Constants
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.util.Calendar
+import java.util.*
 
 class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
@@ -89,17 +92,26 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setUpDateAndRepetition()
+
+        setUpCategory()
+
+        setUpPriority()
+
+        setUpReminder()
+    }
+
+    private fun setUpDateAndRepetition() {
         val datePickerAlertDialog = createAlertDialog(layoutDatePickerBinding, context)
 
         binding.btnDay.setOnClickListener {
             context?.let { cxt ->
 
                 handleSelectDate(datePickerAlertDialog)
-
-                handleSelectTime()
 
                 handleSelectRepetition(cxt)
 
@@ -114,18 +126,49 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                         "Date: $tempDate = ${tempDate.toDayMonthYearString()}"
                     )
                 }
-
             }
         }
+    }
 
-        binding.btnCategory.setOnClickListener {
-            Toast.makeText(context, "Select category", Toast.LENGTH_SHORT).show()
-        }
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setUpCategory() {
+        context?.let { ctx ->
+            val items =
+                mutableListOf("No Category", "Work", "Personal", "Favorite", "Create new category")
+            val categorySpinnerAdapter = CategorySpinnerAdapter(ctx, items)
+            binding.spinnerCategory.adapter = categorySpinnerAdapter
 
-        setUpPriority()
 
-        binding.btnReminder.setOnClickListener {
-            Toast.makeText(context, "Select Reminder", Toast.LENGTH_SHORT).show()
+            var lastSelectedPosition = -1
+            binding.spinnerCategory.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    // Manually invoke onItemSelected when the same item is selected again
+                    val spinnerPosition = binding.spinnerCategory.selectedItemPosition
+                    if (spinnerPosition == lastSelectedPosition && spinnerPosition == categorySpinnerAdapter.count - 1) {
+                        showAddCategoryDialog(ctx, categorySpinnerAdapter)
+                    }
+                    lastSelectedPosition = spinnerPosition
+                }
+                false
+            }
+
+            // Spinner item selected listener
+            binding.spinnerCategory.onItemSelectedListener =
+                object : OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedItem = items[position]
+                        if (selectedItem == "Create new category") {
+                            showAddCategoryDialog(ctx, categorySpinnerAdapter)
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
         }
     }
 
@@ -162,6 +205,94 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
         }
     }
+
+    private fun setUpReminder() {
+        val timePickerAlertDialog = createAlertDialog(layoutTimePickerBinding, context)
+        binding.btnReminder.setOnClickListener {
+            timePickerAlertDialog?.show()
+
+            var timeInMillis: Long = System.currentTimeMillis()
+            val calendar = Calendar.getInstance()
+
+            layoutTimePickerBinding.timerPicker.setOnTimeChangedListener { _, hourOfDay, minute ->
+                layoutTimePickerBinding.switchRepeat.isChecked = true
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                calendar.set(Calendar.SECOND, 0)
+                timeInMillis = calendar.timeInMillis
+
+                isTimeAllowed = timeInMillis >= System.currentTimeMillis()
+                if (!isTimeAllowed) {
+                    Toast.makeText(
+                        context,
+                        "Selected time is in the past",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            with(layoutTimePickerBinding) {
+                setReminderClickListener(tvNone, 0)
+                setReminderClickListener(tv5Minutes, 5)
+                setReminderClickListener(tv10Minutes, 10)
+                setReminderClickListener(tv15Minutes, 15)
+                setReminderClickListener(tv30Minutes, 30)
+                setReminderClickListener(tv1Hour, 60)
+                setReminderClickListener(tv2Hours, 120)
+                setReminderClickListener(tv3Hours, 180)
+
+                layoutTimePickerBinding.switchRepeat.setOnCheckedChangeListener { _, isChecked ->
+                    if (!isChecked) {
+                        timePickerAlertDialog?.dismiss()
+                    }
+                }
+
+                btnCancel.setOnClickListener {
+                    timePickerAlertDialog?.dismiss()
+                }
+
+                btnConfirm.setOnClickListener {
+                    if (isTimeAllowed) {
+                        selectedTime = timeInMillis
+                        selectedRemindBefore = tempRemindBefore
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showAddCategoryDialog(
+        ctx: Context,
+        categorySpinnerAdapter: CategorySpinnerAdapter
+    ) {
+        // Show Add Item dialog
+        val dialogView =
+            LayoutInflater.from(ctx).inflate(R.layout.layout_add_category, null)
+        val dialog = AlertDialog.Builder(ctx)
+            .setView(dialogView)
+            .create()
+
+        // Add Button click listener
+        val btnConfirm = dialogView.findViewById<TextView>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<TextView>(R.id.btnCancel)
+        btnConfirm.setOnClickListener {
+            val categoryName =
+                dialogView.findViewById<EditText>(R.id.edtCategoryName).text.toString()
+            // Add new item to spinner
+            categorySpinnerAdapter.addItem(categoryName)
+            binding.spinnerCategory.setSelection(
+                categorySpinnerAdapter.getPosition(
+                    categoryName
+                )
+            )
+            dialog.dismiss()
+        }
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
 
     private fun handleSelectRepetition(
         cxt: Context
@@ -281,62 +412,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     }"
                 binding.btnDay.text = selectedDate
             }
-        }
-    }
-
-    private fun handleSelectTime() {
-        val timePickerAlertDialog = createAlertDialog(layoutTimePickerBinding, context)
-
-        layoutDatePickerBinding.tvTime.setOnClickListener {
-            timePickerAlertDialog?.show()
-
-            var timeInMillis: Long = System.currentTimeMillis()
-            val calendar = Calendar.getInstance()
-            layoutTimePickerBinding.timerPicker.setOnTimeChangedListener { _, hourOfDay, minute ->
-                layoutTimePickerBinding.switchRepeat.isChecked = true
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
-                calendar.set(Calendar.SECOND, 0)
-                timeInMillis = calendar.timeInMillis
-
-                isTimeAllowed = timeInMillis >= System.currentTimeMillis()
-                if (!isTimeAllowed) {
-                    Toast.makeText(
-                        context,
-                        "Selected time is in the past",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            with(layoutTimePickerBinding) {
-                setReminderClickListener(tvNone, 0)
-                setReminderClickListener(tv5Minutes, 5)
-                setReminderClickListener(tv10Minutes, 10)
-                setReminderClickListener(tv15Minutes, 15)
-                setReminderClickListener(tv30Minutes, 30)
-                setReminderClickListener(tv1Hour, 60)
-                setReminderClickListener(tv2Hours, 120)
-                setReminderClickListener(tv3Hours, 180)
-
-                layoutTimePickerBinding.switchRepeat.setOnCheckedChangeListener { _, isChecked ->
-                    if (!isChecked) {
-                        timePickerAlertDialog?.dismiss()
-                    }
-                }
-
-                btnCancel.setOnClickListener {
-                    timePickerAlertDialog?.dismiss()
-                }
-
-                btnConfirm.setOnClickListener {
-                    if (isTimeAllowed) {
-                        selectedTime = timeInMillis
-                        selectedRemindBefore = tempRemindBefore
-                    }
-                }
-            }
-
         }
     }
 
@@ -470,8 +545,8 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         return adapter
     }
 
-    private fun createItemSelectedListener(itemCallback: (String) -> Unit): AdapterView.OnItemSelectedListener {
-        return object : AdapterView.OnItemSelectedListener {
+    private fun createItemSelectedListener(itemCallback: (String) -> Unit): OnItemSelectedListener {
+        return object : OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
                 val selectedItem = parent?.getItemAtPosition(pos).toString()
                 itemCallback(selectedItem)

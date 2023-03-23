@@ -11,48 +11,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_16" />
 
-
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/datePicker"
-        android:layout_marginStart="@dimen/margin_60"
-        android:layout_marginTop="-16dp"
-        android:drawablePadding="@dimen/padding_16"
-        android:text="@string/text_time"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_16"
-        app:drawableStartCompat="@drawable/ic_time" />
-
-    <TextView
-        android:id="@+id/tvTimeValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/datePicker"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="@dimen/margin_60"
-        android:layout_marginTop="-12dp"
-        android:layout_marginEnd="@dimen/margin_60"
-        android:text="@string/text_none"
-        android:textColor="@color/black" />
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/tvTimeValue"
-        android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_8"
-        android:background="#DDDDDD" />
-
     <TextView
         android:id="@+id/tvRepeat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider1"
+        android:layout_below="@id/datePicker"
         android:layout_marginStart="@dimen/margin_60"
-        android:layout_marginTop="@dimen/margin_16"
         android:drawablePadding="@dimen/padding_16"
         android:text="@string/text_repeat"
         android:textColor="@color/black"
@@ -63,10 +27,10 @@
         android:id="@+id/tvRepeatValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider1"
+        android:layout_below="@id/datePicker"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="@dimen/margin_60"
-        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_4"
         android:layout_marginEnd="@dimen/margin_60"
         android:text="@string/text_none"
         android:textColor="@color/black" />

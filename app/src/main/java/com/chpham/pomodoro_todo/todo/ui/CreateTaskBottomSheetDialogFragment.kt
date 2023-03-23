@@ -544,7 +544,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             else -> {
                 val selectedDate =
                     "${selectedCalendar.get(Calendar.DAY_OF_MONTH)}/${selectedCalendar.get(Calendar.MONTH) + 1}/${
-                        selectedCalendar.get(Calendar.YEAR)
+                    selectedCalendar.get(Calendar.YEAR)
                     }"
                 binding.btnDay.text = selectedDate
             }

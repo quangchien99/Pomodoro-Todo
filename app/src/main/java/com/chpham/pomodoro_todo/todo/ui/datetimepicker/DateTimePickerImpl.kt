@@ -31,7 +31,7 @@ class DateTimePickerImpl(
 
     override fun isShowing(): Boolean {
         return datePickerDialog?.isShowing == true ||
-                timePickerDialog?.isShowing == true
+            timePickerDialog?.isShowing == true
     }
 
     private fun showDatePicker(listener: DatePickerDialog.OnDateSetListener) {

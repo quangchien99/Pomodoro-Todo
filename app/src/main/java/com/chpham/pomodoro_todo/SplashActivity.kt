@@ -25,7 +25,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
         Handler(this.mainLooper).postDelayed({
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
-
         }, ANIMATION_TIME)
     }
 }

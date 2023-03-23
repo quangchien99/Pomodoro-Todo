@@ -2,7 +2,7 @@ package com.chpham.pomodoro_todo.utils
 
 import android.content.Context
 import android.util.TypedValue
-import java.util.*
+import java.util.Calendar
 
 /**
  * @since March 19, 2023
@@ -10,7 +10,6 @@ import java.util.*
  * @authoredBy Chien.Ph
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
-
 
 /**
  * A extension function on [Int] that converts seconds to minutes and returns a formatted string.
@@ -65,7 +64,6 @@ fun Long.toHourMinuteString(): String {
         minute
     ) // format the hour and minute values into a string
 }
-
 
 // Extension function to convert dp to px
 fun Int.dpToPx(context: Context): Int {

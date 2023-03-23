@@ -164,7 +164,7 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                         turnOnFocus()
                     }
                     else -> {
-                        //do nothing
+                        // do nothing
                     }
                 }
             }

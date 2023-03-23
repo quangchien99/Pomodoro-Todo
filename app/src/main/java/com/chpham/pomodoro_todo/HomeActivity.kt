@@ -83,8 +83,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 /**
                  * Show the bottomNavigation when moving to fragment to do or settings
                  */
-                if ((position == FRAGMENT_TODO_INDEX || position == FRAGMENT_SETTINGS_INDEX)
-                    && isFocusingOn
+                if ((position == FRAGMENT_TODO_INDEX || position == FRAGMENT_SETTINGS_INDEX) &&
+                    isFocusingOn
                 ) {
                     setFocusStatus(false)
                 }

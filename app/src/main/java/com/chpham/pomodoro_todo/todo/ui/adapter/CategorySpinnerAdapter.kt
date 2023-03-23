@@ -53,5 +53,4 @@ class CategorySpinnerAdapter(context: Context, private val items: MutableList<St
         items.add(items.size - 1, item)
         notifyDataSetChanged()
     }
-
 }

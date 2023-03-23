@@ -18,7 +18,6 @@ class PomodoroViewModel(
     private val _countDownTimerState = MutableLiveData<CountDownTimerState>()
     val countDownTimerState: LiveData<CountDownTimerState> = _countDownTimerState
 
-
     fun startCountDownTimer(limitCount: Int) {
         counterJob?.cancel()
         counterJob = viewModelScope.launch(handlerException) {
@@ -41,8 +40,6 @@ class PomodoroViewModel(
     }
 
     override fun initState() {
-        //do nothing
+        // do nothing
     }
-
-
 }

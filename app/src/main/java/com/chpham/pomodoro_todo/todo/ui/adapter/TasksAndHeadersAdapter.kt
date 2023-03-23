@@ -202,7 +202,6 @@ class TasksAndHeadersAdapter(
                     oldItem.second == newItem.second
                 } else false
             }
-
         }
 
         const val VIEW_TYPE_TASK = 1

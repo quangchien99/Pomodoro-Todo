@@ -47,7 +47,7 @@ class PomodoroRepositoryImpl(private val context: Context) : PomodoroRepository 
                         CountDownTimerState.Started -> {
                             trySend(CountDownTimerState.Started).isSuccess
                         }
-                        //Case counting - return CountDownTimerState.Tick
+                        // Case counting - return CountDownTimerState.Tick
                         else -> {
                             trySend(it).isSuccess
                         }

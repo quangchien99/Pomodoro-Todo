@@ -10,15 +10,18 @@ class DateTimePickerImpl(
     private var datePickerDialog: DatePickerDialog? = null
     private var timePickerDialog: TimePickerDialog? = null
 
-
     override fun show() {
-        showDatePicker(DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            showTimePicker(TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                settings.onDateTimeSetListener?.invoke(
-                    year, month, dayOfMonth, hourOfDay, minute
+        showDatePicker(
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                showTimePicker(
+                    TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                        settings.onDateTimeSetListener?.invoke(
+                            year, month, dayOfMonth, hourOfDay, minute
+                        )
+                    }
                 )
-            })
-        })
+            }
+        )
     }
 
     override fun dismiss() {
@@ -63,5 +66,4 @@ class DateTimePickerImpl(
         }
         timePickerDialog?.show()
     }
-
 }

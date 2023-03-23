@@ -126,6 +126,5 @@ interface DateTimePicker {
 
         /** Construct and return an instance of DateTimePicker with the specified configuration */
         fun build(): DateTimePicker = DateTimePickerImpl(settings)
-
     }
 }

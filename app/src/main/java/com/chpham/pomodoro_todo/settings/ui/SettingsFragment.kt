@@ -18,5 +18,4 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentSettingsBinding.inflate(layoutInflater, container, false)
     }
-
 }

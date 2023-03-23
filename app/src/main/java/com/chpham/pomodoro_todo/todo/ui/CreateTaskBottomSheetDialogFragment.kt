@@ -28,7 +28,7 @@ import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
 import com.chpham.pomodoro_todo.utils.Constants
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.util.*
+import java.util.Calendar
 
 class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
@@ -71,7 +71,9 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding = BottomSheetFragementAddTaskBinding.inflate(inflater, container, false)
         layoutDatePickerBinding = LayoutDatePickerBinding.inflate(LayoutInflater.from(context))
@@ -114,9 +116,11 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 handleSelectRepetition(cxt, setReminderAlertDialog)
 
                 layoutDatePickerBinding.btnCancel.setOnClickListener {
-                    updateSelectedDayText(Calendar.getInstance().apply {
-                        this.timeInMillis = selectedDate
-                    })
+                    updateSelectedDayText(
+                        Calendar.getInstance().apply {
+                            this.timeInMillis = selectedDate
+                        }
+                    )
                     datePickerAlertDialog?.dismiss()
                 }
 
@@ -136,7 +140,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             val categorySpinnerAdapter = CategorySpinnerAdapter(ctx, items)
             binding.spinnerCategory.adapter = categorySpinnerAdapter
 
-
             var lastSelectedPosition = -1
             binding.spinnerCategory.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
@@ -153,7 +156,10 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             // Spinner item selected listener
             binding.spinnerCategory.onItemSelectedListener = object : OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
                 ) {
                     val selectedItem = items[position]
                     if (selectedItem == "Create new category") {
@@ -183,7 +189,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         binding.spinnerPriority.adapter = adapterPrioritySpinner
         binding.spinnerPriority.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(adapter: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                //implement later
+                // implement later
                 selectedPriority = when (pos) {
                     1 -> {
                         TaskPriority.LOW
@@ -201,7 +207,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
 
             override fun onNothingSelected(adapter: AdapterView<*>?) {
-                //do nothing
+                // do nothing
             }
         }
     }
@@ -253,11 +259,13 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 btnConfirm.setOnClickListener {
                     if (layoutTimePickerBinding.switchReminder.isChecked) {
                         binding.btnReminder.text = resources.getString(
-                            R.string.text_remind_before_format, if (selectedRemindBefore < 60) {
+                            R.string.text_remind_before_format,
+                            if (selectedRemindBefore < 60) {
                                 selectedRemindBefore.toString()
                             } else {
                                 (selectedRemindBefore / 60).toString()
-                            }, if (selectedRemindBefore < 60) {
+                            },
+                            if (selectedRemindBefore < 60) {
                                 getString(R.string.text_minutes)
                             } else if (selectedRemindBefore == 60) {
                                 getString(R.string.text_hour)
@@ -268,13 +276,15 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                         binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
                             resources.getDrawable(
                                 R.drawable.ic_alarm_on, null
-                            ), null, null, null
+                            ),
+                            null, null, null
                         )
                     } else {
                         binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
                             resources.getDrawable(
                                 R.drawable.ic_alarm, null
-                            ), null, null, null
+                            ),
+                            null, null, null
                         )
                         binding.btnReminder.text = resources.getString(R.string.text_reminder)
                     }
@@ -285,7 +295,8 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun showAddCategoryDialog(
-        ctx: Context, categorySpinnerAdapter: CategorySpinnerAdapter
+        ctx: Context,
+        categorySpinnerAdapter: CategorySpinnerAdapter
     ) {
         // Show Add Item dialog
         val dialogView = LayoutInflater.from(ctx).inflate(R.layout.layout_add_category, null)
@@ -314,9 +325,9 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         dialog.show()
     }
 
-
     private fun handleSelectRepetition(
-        cxt: Context, setReminderAlertDialog: AlertDialog?
+        cxt: Context,
+        setReminderAlertDialog: AlertDialog?
     ) {
 
         setReminderAlertDialog?.setOnDismissListener {
@@ -343,7 +354,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         val endWeeklyValues = resources.getStringArray(R.array.end_weekly)
         val endMonthlyValues = resources.getStringArray(R.array.end_monthly)
         val repeatMonthlyValues = resources.getStringArray(R.array.repeat_in_monthly)
-
 
         val adapterIntervalDaily = createSpinnerAdapter(cxt, R.array.interval_daily)
         val adapterIntervalWeekly = createSpinnerAdapter(cxt, R.array.interval_weekly)
@@ -471,7 +481,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                             layoutRepeatOptionsBinding.tvSunday.performClick()
                         }
                         else -> {
-                            //do nothing
+                            // do nothing
                         }
                     }
                 }
@@ -496,7 +506,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     }
                 }
                 else -> {
-                    //continue
+                    // continue
                 }
             }
             setReminderAlertDialog?.show()
@@ -553,7 +563,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 layoutRepeatOptionsBinding.tvMonthly.setBackgroundResource(R.drawable.bg_btn_date_unselected)
             }
             else -> {
-                //do nothing
+                // do nothing
             }
         }
     }
@@ -654,7 +664,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 R.drawable.bg_btn_date_selected
             )
             else -> {
-                //do nothing
+                // do nothing
             }
         }
     }
@@ -686,7 +696,8 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun createAlertDialog(
-        binding: ViewBinding, context: Context?
+        binding: ViewBinding,
+        context: Context?
     ): AlertDialog? {
         val dialogView = binding.root
         val alertDialogBuilder = AlertDialog.Builder(context ?: return null)
@@ -710,5 +721,4 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         super.onDismiss(dialog)
         Log.e("ChienNgan", "CreateTaskBottomSheetDialogFragment: onDismiss")
     }
-
 }

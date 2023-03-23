@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.chpham.pomodoro_todo.R
 
-
 class PrioritySpinnerAdapter(
     context: Context,
     objects: Array<String>,
@@ -30,7 +29,6 @@ class PrioritySpinnerAdapter(
         contentArray = objects
         this.imageArray = imageArray
     }
-
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         return getCustomView(position, convertView, parent)

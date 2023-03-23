@@ -78,7 +78,9 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                     binding.btnStart.text = getString(R.string.text_btn_pause)
                 }
                 is CountDownTimerState.Tick -> {
-                    if (currentTimerState != CountDownTimerState.Paused && currentTimerState != CountDownTimerState.Finished) {
+                    if (currentTimerState != CountDownTimerState.Paused
+                        && currentTimerState != CountDownTimerState.Finished
+                    ) {
                         binding.tvTimer.text = state.currentCount.convertSecondsToMinutes()
                         currentTimerState = CountDownTimerState.Counting
                     }
@@ -122,7 +124,9 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
                     changeMode(clickedButtonMode)
                     buttonModeMap.forEach { (buttonId, mode) ->
                         if (mode != clickedButtonMode) {
-                            binding.root.findViewById<Button>(buttonId).changeBackground(false)
+                            binding.root.findViewById<Button>(
+                                buttonId
+                            ).changeBackground(false)
                         }
                     }
                     (clickedButton as Button).changeBackground(true)
@@ -190,7 +194,9 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
         currentMode = newMode
         binding.tvTimer.text = currentMode.minutes.getFormattedMinutes()
         binding.btnStart.text = getString(R.string.text_btn_start)
-        if (currentTimerState == CountDownTimerState.Counting || currentTimerState == CountDownTimerState.Paused) {
+        if (currentTimerState == CountDownTimerState.Counting
+            || currentTimerState == CountDownTimerState.Paused
+        ) {
             viewModel.pauseCountDownTimer()
             currentTimerState = CountDownTimerState.Started
         }

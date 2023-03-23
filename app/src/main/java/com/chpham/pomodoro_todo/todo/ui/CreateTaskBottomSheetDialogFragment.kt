@@ -1,13 +1,16 @@
 package com.chpham.pomodoro_todo.todo.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +24,7 @@ import com.chpham.pomodoro_todo.databinding.BottomSheetFragementAddTaskBinding
 import com.chpham.pomodoro_todo.databinding.LayoutDatePickerBinding
 import com.chpham.pomodoro_todo.databinding.LayoutRepeatOptionsBinding
 import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
+import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
 import com.chpham.pomodoro_todo.utils.Constants
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -53,6 +57,8 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private var selectedEndInt: Int = -1
 
     private var isTimeAllowed = false
+
+    private var tempDate: Long = -1
 
     private var tempMode = RemindOptions.RemindMode.UN_SPECIFIED
     private var temptInterval: String? = null
@@ -98,13 +104,14 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 handleSelectRepetition(cxt)
 
                 layoutDatePickerBinding.btnCancel.setOnClickListener {
+                    updateSelectedDayText(Calendar.getInstance())
                     datePickerAlertDialog?.dismiss()
                 }
 
                 layoutDatePickerBinding.btnConfirm.setOnClickListener {
                     Log.e(
                         "ChienNgan",
-                        "Date: $selectedDate = ${selectedDate.toDayMonthYearString()}"
+                        "Date: $tempDate = ${tempDate.toDayMonthYearString()}"
                     )
                 }
 
@@ -115,12 +122,44 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             Toast.makeText(context, "Select category", Toast.LENGTH_SHORT).show()
         }
 
-        binding.btnPriority.setOnClickListener {
-            Toast.makeText(context, "Select Priority", Toast.LENGTH_SHORT).show()
-        }
+        setUpPriority()
 
         binding.btnReminder.setOnClickListener {
             Toast.makeText(context, "Select Reminder", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setUpPriority() {
+        val priorityValues = resources.getStringArray(R.array.priority_values)
+        val priorityResources = arrayOf(
+            R.drawable.ic_none_priority,
+            R.drawable.ic_priority_low,
+            R.drawable.ic_priority_medium,
+            R.drawable.ic_priority_high,
+        )
+        val adapterPrioritySpinner = context?.let {
+            PrioritySpinnerAdapter(
+                context = it,
+                objects = priorityValues,
+                imageArray = priorityResources
+            )
+        }
+        binding.spinnerPriority.adapter = adapterPrioritySpinner
+        binding.spinnerPriority.onFocusChangeListener =
+            OnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    binding.spinnerPriority.visibility = View.GONE
+                }
+            }
+        binding.spinnerPriority.onItemSelectedListener = object : OnItemSelectedListener {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
+                //implement later
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                //do nothing
+            }
         }
     }
 
@@ -132,6 +171,8 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         layoutDatePickerBinding.tvRepeat.setOnClickListener {
             setReminderAlertDialog?.show()
+
+            layoutRepeatOptionsBinding.switchRepeat.isChecked = true
 
             val adapterIntervalDaily = createSpinnerAdapter(cxt, R.array.interval_daily)
             val adapterIntervalWeekly = createSpinnerAdapter(cxt, R.array.interval_weekly)
@@ -184,11 +225,16 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 )
             }
 
+            layoutRepeatOptionsBinding.switchRepeat.setOnCheckedChangeListener { _, isChecked ->
+                if (!isChecked) {
+                    tempMode = RemindOptions.RemindMode.UN_SPECIFIED
+                    temptInterval = null
+                    tempRepeatIn = null
+                    tempEndInt = null
+                    setReminderAlertDialog?.dismiss()
+                }
+            }
             layoutRepeatOptionsBinding.btnCancel.setOnClickListener {
-                tempMode = RemindOptions.RemindMode.UN_SPECIFIED
-                temptInterval = null
-                tempRepeatIn = null
-                tempEndInt = null
                 setReminderAlertDialog?.dismiss()
             }
 
@@ -210,7 +256,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         layoutDatePickerBinding.datePicker.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = selectedCalendar.timeInMillis
+            tempDate = selectedCalendar.timeInMillis
 
             updateSelectedDayText(selectedCalendar)
         }
@@ -243,9 +289,11 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         layoutDatePickerBinding.tvTime.setOnClickListener {
             timePickerAlertDialog?.show()
+
             var timeInMillis: Long = System.currentTimeMillis()
             val calendar = Calendar.getInstance()
             layoutTimePickerBinding.timerPicker.setOnTimeChangedListener { _, hourOfDay, minute ->
+                layoutTimePickerBinding.switchRepeat.isChecked = true
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
                 calendar.set(Calendar.SECOND, 0)
@@ -271,8 +319,13 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 setReminderClickListener(tv2Hours, 120)
                 setReminderClickListener(tv3Hours, 180)
 
+                layoutTimePickerBinding.switchRepeat.setOnCheckedChangeListener { _, isChecked ->
+                    if (!isChecked) {
+                        timePickerAlertDialog?.dismiss()
+                    }
+                }
+
                 btnCancel.setOnClickListener {
-                    tempRemindBefore = 0
                     timePickerAlertDialog?.dismiss()
                 }
 
@@ -443,6 +496,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setReminderClickListener(textView: TextView, minutes: Int) {
+        layoutTimePickerBinding.switchRepeat.isChecked = true
         textView.setOnClickListener {
             unSelectPreviousOptions(tempRemindBefore)
             layoutTimePickerBinding.tvReminderValue.text = textView.text

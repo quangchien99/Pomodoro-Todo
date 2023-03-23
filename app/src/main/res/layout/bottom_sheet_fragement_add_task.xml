@@ -30,7 +30,6 @@
         android:hint="@string/text_create_new_task_here"
         android:padding="@dimen/padding_16" />
 
-
     <ImageView
         android:id="@+id/btnAddTask"
         android:layout_width="@dimen/width_40"
@@ -103,27 +102,20 @@
                 android:textSize="12sp"
                 app:backgroundTint="@null" />
 
-            <Button
-                android:id="@+id/btnPriority"
-                style="?android:attr/buttonBarButtonStyle"
+            <Spinner
+                android:id="@+id/spinnerPriority"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_36"
-                android:layout_marginStart="@dimen/margin_8"
-                android:background="@drawable/bg_btn_grey_border_rounded"
-                android:drawableLeft="@drawable/ic_priority"
+                android:layout_height="124dp"
+                android:background="@null"
+                android:gravity="center"
                 android:maxWidth="@dimen/width_160"
-                android:text="@string/text_priority"
-                android:textAllCaps="false"
-                android:textColor="@color/gray"
-                android:textSize="12sp"
-                app:backgroundTint="@null" />
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/btnReminder"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/height_36"
-                android:layout_marginStart="@dimen/margin_8"
                 android:background="@drawable/bg_btn_grey_border_rounded"
                 android:drawableLeft="@drawable/ic_alarm"
                 android:maxWidth="@dimen/width_160"

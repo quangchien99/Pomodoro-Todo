@@ -32,9 +32,9 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
     private var currentTimerState: CountDownTimerState = CountDownTimerState.NotStarted
 
     /**
-    A map that maps button IDs to their respective mode values.
-    The map is used to determine the mode associated with a clicked button.
-    The keys are the IDs of the buttons, and the values are the corresponding mode values.
+     * A map that maps button IDs to their respective mode values.
+     * The map is used to determine the mode associated with a clicked button.
+     * The keys are the IDs of the buttons, and the values are the corresponding mode values.
      */
     private val buttonModeMap = mapOf(
         R.id.btnPomodoro to PomodoroMode.MODE_POMODORO,
@@ -188,7 +188,7 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
     }
 
     /**
-    This function changes the current mode of the timer and updates the UI accordingly.
+     * This function changes the current mode of the timer and updates the UI accordingly.
      */
     private fun changeMode(newMode: PomodoroMode) {
         currentMode = newMode
@@ -200,6 +200,7 @@ class PomodoroFragment : BaseFragment<FragmentPomodoroBinding>(), View.OnClickLi
             viewModel.pauseCountDownTimer()
             currentTimerState = CountDownTimerState.Started
         }
+
         turnOffFocus()
     }
 

@@ -172,7 +172,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         val categories = mutableListOf<String>()
 
         //TODO: dummy data
-        for (i in 0..20) {
+        for (i in 0..10) {
             tasks.add(
                 Task(
                     id = i,

@@ -97,7 +97,6 @@
                 android:layout_marginStart="@dimen/margin_8"
                 android:background="@drawable/bg_btn_grey_border_rounded"
                 android:drawableLeft="@drawable/ic_alarm"
-                android:maxWidth="@dimen/width_160"
                 android:text="@string/text_reminder"
                 android:textAllCaps="false"
                 android:textColor="@color/gray"

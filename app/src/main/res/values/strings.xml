@@ -41,8 +41,12 @@
     <string name="text_repeat">Repeat</string>
     <string name="text_cancel">Cancel</string>
     <string name="text_confirm">Confirm</string>
-    <string name="text_set_up_deadline">Set up deadline</string>
+    <string name="text_set_up_reminder">Set up reminder</string>
     <string name="text_remind_before">Remind before:</string>
+    <string name="text_remind_before_format">Remind before: %1$s %2$s</string>
+    <string name="text_minutes">minutes</string>
+    <string name="text_hours">hours</string>
+    <string name="text_hour">hour</string>
     <string name="text_3_hours">3 hours</string>
     <string name="text_2_hours">2 hours</string>
     <string name="text_1_hour">1 hour</string>

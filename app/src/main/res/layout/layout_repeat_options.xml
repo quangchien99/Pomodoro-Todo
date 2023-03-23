@@ -27,7 +27,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/margin_16"
-            android:checked="true" />
+            android:checked="false" />
     </RelativeLayout>
 
     <LinearLayout

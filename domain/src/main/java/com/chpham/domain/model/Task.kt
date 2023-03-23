@@ -14,7 +14,6 @@ data class Task(
     val timeCreated: Long,
     val state: TaskState = TaskState.TO_DO,
     val priority: TaskPriority = TaskPriority.MEDIUM,
-    val tag: Tag? = null,
     val remindOptions: RemindOptions? = null,
     val timeFinished: Long? = null,
     val deadline: Long? = null,

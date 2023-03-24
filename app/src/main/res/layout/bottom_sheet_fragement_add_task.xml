@@ -17,26 +17,44 @@
         android:textSize="@dimen/text_size_16"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/edtTaskName"
+    <LinearLayout
+        android:id="@+id/layoutTaskName"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_64"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tvHeader"
-        android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8"
-        android:layout_marginEnd="@dimen/margin_8"
-        android:layout_marginBottom="@dimen/margin_8"
         android:layout_toStartOf="@id/btnAddTask"
-        android:background="@drawable/bg_edt_rounded"
-        android:hint="@string/text_create_new_task_here"
-        android:padding="@dimen/padding_16" />
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edtTaskName"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_64"
+            android:layout_marginStart="@dimen/margin_24"
+            android:layout_marginTop="@dimen/margin_8"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:background="@drawable/bg_edt_rounded"
+            android:hint="@string/text_create_new_task_here"
+            android:padding="@dimen/padding_16" />
+
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_24"
+            android:text="@string/text_task_name_must_not_be_empty"
+            android:textColor="@color/red"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/btnAddTask"
         android:layout_width="@dimen/width_40"
         android:layout_height="@dimen/height_40"
         android:layout_below="@id/tvHeader"
-        android:layout_alignBottom="@id/edtTaskName"
+        android:layout_alignBottom="@id/layoutTaskName"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
@@ -47,7 +65,7 @@
         android:id="@+id/edtTaskDescription"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@id/edtTaskName"
+        android:layout_below="@id/layoutTaskName"
         android:layout_marginStart="@dimen/margin_24"
         android:layout_marginEnd="@dimen/margin_16"
         android:background="@color/white"

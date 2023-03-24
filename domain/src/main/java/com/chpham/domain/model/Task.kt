@@ -17,7 +17,7 @@ data class Task(
     val remindOptions: RemindOptions? = null,
     val timeFinished: Long? = null,
     val deadline: Long? = null,
-    val timeToRemind: Long? = null,
+    val remindBefore: Int? = null,
     val category: String? = null,
     val description: String? = null
 )

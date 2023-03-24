@@ -14,7 +14,9 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import com.chpham.domain.model.RemindOptions
+import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskPriority
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.databinding.BottomSheetFragementAddTaskBinding
@@ -23,8 +25,8 @@ import com.chpham.pomodoro_todo.databinding.LayoutRepeatOptionsBinding
 import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategorySpinnerAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
-import com.chpham.pomodoro_todo.utils.Constants
-import com.chpham.pomodoro_todo.utils.toDayMonthYearString
+import com.chpham.pomodoro_todo.utils.convertToDays
+import com.chpham.pomodoro_todo.utils.getDay
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Calendar
 
@@ -34,9 +36,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var layoutDatePickerBinding: LayoutDatePickerBinding
     private lateinit var layoutTimePickerBinding: LayoutTimePickerBinding
     private lateinit var layoutRepeatOptionsBinding: LayoutRepeatOptionsBinding
-
-    private var taskName: String = Constants.EMPTY
-    private var taskDescription: String? = null
 
     private var selectedDate: Long = Calendar.getInstance().timeInMillis
 
@@ -87,11 +86,34 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         setUpReminder()
 
+        binding.edtTaskName.doOnTextChanged { _, _, _, _ ->
+            binding.tvError.visibility = View.GONE
+        }
         binding.btnAddTask.setOnClickListener {
-            Log.e(
-                "ChienNgan",
-                "Create task: category= $selectedCategory -- priority= $selectedPriority -- time= $selectedTime -- remind before= $selectedRemindBefore -- date= ${selectedDate.toDayMonthYearString()} -- mode = $selectedMode -- interval= $selectedInterval -- repeat in= $selectedRepeatIn -- endIn= $selectedEndInt"
-            )
+            if (binding.edtTaskName.text.isNullOrEmpty()) {
+                binding.tvError.visibility = View.VISIBLE
+            } else {
+                val task = Task(
+                    name = binding.edtTaskName.text.toString(),
+                    timeCreated = System.currentTimeMillis(),
+                    priority = selectedPriority,
+                    category = selectedCategory,
+                    deadline = selectedTime,
+                    remindOptions = RemindOptions(
+                        mode = selectedMode,
+                        interval = selectedInterval?.convertToDays(
+                            context ?: return@setOnClickListener
+                        ) ?: -1,
+                        repeatInMonth = selectedRepeatIn?.getDay() ?: -1,
+                        repeatInWeek = selectedRepeatInWeek,
+                        endInt = selectedEndInt?.convertToDays(context ?: return@setOnClickListener)
+                            ?: -1
+                    ),
+                    remindBefore = selectedRemindBefore,
+                    description = binding.edtTaskDescription.text.toString()
+                )
+                Log.e("ChienNgan", "New Task= $task")
+            }
         }
     }
 
@@ -211,6 +233,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun setUpReminder() {
         val reminderDialog = ReminderDialog(context ?: return, layoutTimePickerBinding)
         binding.btnReminder.setOnClickListener {
@@ -220,6 +243,39 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             ) { time, remindBefore ->
                 selectedTime = time
                 selectedRemindBefore = remindBefore
+                if (selectedRemindBefore > 0) {
+                    binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
+                        resources.getDrawable(
+                            R.drawable.ic_alarm_on,
+                            null
+                        ),
+                        null, null, null
+                    )
+                    binding.btnReminder.text = getString(
+                        R.string.text_remind_before_format,
+                        if (selectedRemindBefore < 60) {
+                            selectedRemindBefore.toString()
+                        } else {
+                            (selectedRemindBefore / 60).toString()
+                        },
+                        if (selectedRemindBefore < 60) {
+                            getString(R.string.text_minutes)
+                        } else if (selectedRemindBefore == 60) {
+                            getString(R.string.text_hour)
+                        } else {
+                            getString(R.string.text_hours)
+                        }
+                    )
+                } else {
+                    binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
+                        resources.getDrawable(
+                            R.drawable.ic_alarm,
+                            null
+                        ),
+                        null, null, null
+                    )
+                    binding.btnReminder.text = getString(R.string.text_reminder)
+                }
             }
         }
     }
@@ -279,6 +335,5 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        Log.e("ChienNgan", "CreateTaskBottomSheetDialogFragment: onDismiss")
     }
 }

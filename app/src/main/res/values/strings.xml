@@ -68,6 +68,13 @@
     <string name="text_wed">Wed</string>
     <string name="text_tue">Tue</string>
     <string name="text_mon">Mon</string>
+    <string name="text_task_name_must_not_be_empty">Task name must not be empty</string>
+    <string name="text_day">day</string>
+    <string name="text_days">days</string>
+    <string name="text_week">week</string>
+    <string name="text_weeks">weeks</string>
+    <string name="text_month">month</string>
+    <string name="text_months">months</string>
     <!--    to do list fragment-->
 
 </resources>

@@ -11,11 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.TaskPriority
 import com.chpham.pomodoro_todo.R
@@ -26,6 +24,7 @@ import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategorySpinnerAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
 import com.chpham.pomodoro_todo.utils.Constants
+import com.chpham.pomodoro_todo.utils.createAlertDialog
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Calendar
@@ -55,11 +54,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private var selectedEndInt: String? = null
 
     private var tempDate: Long = -1
-
-    private var tempMode = RemindOptions.RemindMode.UN_SPECIFIED
-    private var temptInterval: String? = null
-    private var tempRepeatIn: String? = null
-    private var tempEndInt: String? = null
 
     companion object {
         const val TAG = "CreateTaskBottomSheetDialogFragment"
@@ -104,30 +98,40 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setUpDateAndRepetition() {
-        val datePickerAlertDialog = createAlertDialog(layoutDatePickerBinding, context)
+        val datePickerAlertDialog = layoutDatePickerBinding.createAlertDialog(context ?: return)
 
-        val setReminderAlertDialog = createAlertDialog(layoutRepeatOptionsBinding, context)
+        val repeatOptionsDialog = RepeatOptionsDialog(context ?: return, layoutRepeatOptionsBinding)
 
         binding.btnDay.setOnClickListener {
-            context?.let { cxt ->
 
-                handleSelectDate(datePickerAlertDialog)
+            handleSelectDate(datePickerAlertDialog)
 
-                handleSelectRepetition(cxt, setReminderAlertDialog)
-
-                layoutDatePickerBinding.btnCancel.setOnClickListener {
-                    updateSelectedDayText(
-                        Calendar.getInstance().apply {
-                            this.timeInMillis = selectedDate
-                        }
-                    )
-                    datePickerAlertDialog?.dismiss()
+            layoutDatePickerBinding.tvRepeat.setOnClickListener {
+                repeatOptionsDialog.handleSelectRepetition(
+                    currentMode = selectedMode,
+                    currentInterval = selectedInterval,
+                    currentRepeatIn = selectedRepeatIn,
+                    currentEndInt = selectedEndInt
+                ) { mode, interval, repeatIn, endIn ->
+                    selectedMode = mode
+                    selectedInterval = interval
+                    selectedRepeatIn = repeatIn
+                    selectedEndInt = endIn
                 }
+            }
 
-                layoutDatePickerBinding.btnConfirm.setOnClickListener {
-                    selectedDate = tempDate
-                    datePickerAlertDialog?.dismiss()
-                }
+            layoutDatePickerBinding.btnCancel.setOnClickListener {
+                updateSelectedDayText(
+                    Calendar.getInstance().apply {
+                        this.timeInMillis = selectedDate
+                    }
+                )
+                datePickerAlertDialog.dismiss()
+            }
+
+            layoutDatePickerBinding.btnConfirm.setOnClickListener {
+                selectedDate = tempDate
+                datePickerAlertDialog.dismiss()
             }
         }
     }
@@ -214,9 +218,9 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun setUpReminder() {
-        val timePickerAlertDialog = createAlertDialog(layoutTimePickerBinding, context)
+        val timePickerAlertDialog = layoutTimePickerBinding.createAlertDialog(context ?: return)
         binding.btnReminder.setOnClickListener {
-            timePickerAlertDialog?.show()
+            timePickerAlertDialog.show()
 
             if (selectedRemindBefore == 0) {
                 layoutTimePickerBinding.switchReminder.isChecked = false
@@ -325,194 +329,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         dialog.show()
     }
 
-    private fun handleSelectRepetition(
-        cxt: Context,
-        setReminderAlertDialog: AlertDialog?
-    ) {
-
-        setReminderAlertDialog?.setOnDismissListener {
-            when (selectedMode) {
-                RemindOptions.RemindMode.DAILY -> {
-                    layoutDatePickerBinding.tvRepeatValue.text = getString(R.string.text_daily)
-                }
-                RemindOptions.RemindMode.WEEKLY -> {
-                    layoutDatePickerBinding.tvRepeatValue.text = getString(R.string.text_weekly)
-                }
-                RemindOptions.RemindMode.MONTHLY -> {
-                    layoutDatePickerBinding.tvRepeatValue.text = getString(R.string.text_monthly)
-                }
-                else -> {
-                    layoutDatePickerBinding.tvRepeatValue.text = getString(R.string.text_none)
-                }
-            }
-        }
-
-        val intervalDailyValues = resources.getStringArray(R.array.interval_daily)
-        val intervalWeeklyValues = resources.getStringArray(R.array.interval_weekly)
-        val intervalMonthlyValues = resources.getStringArray(R.array.interval_monthly)
-        val endDailyValues = resources.getStringArray(R.array.end_daily)
-        val endWeeklyValues = resources.getStringArray(R.array.end_weekly)
-        val endMonthlyValues = resources.getStringArray(R.array.end_monthly)
-        val repeatMonthlyValues = resources.getStringArray(R.array.repeat_in_monthly)
-
-        val adapterIntervalDaily = createSpinnerAdapter(cxt, R.array.interval_daily)
-        val adapterIntervalWeekly = createSpinnerAdapter(cxt, R.array.interval_weekly)
-        val adapterIntervalMonthly = createSpinnerAdapter(cxt, R.array.interval_monthly)
-        val adapterEndDaily = createSpinnerAdapter(cxt, R.array.end_daily)
-        val adapterEndWeekly = createSpinnerAdapter(cxt, R.array.end_weekly)
-        val adapterEndMonthly = createSpinnerAdapter(cxt, R.array.end_monthly)
-        val adapterRepeatInMonthly = createSpinnerAdapter(cxt, R.array.repeat_in_monthly)
-
-        layoutRepeatOptionsBinding.spinnerRepeatEvery.onItemSelectedListener =
-            createItemSelectedListener { selectedItem ->
-                temptInterval = selectedItem
-            }
-
-        layoutRepeatOptionsBinding.spinnerRepeatEnd.onItemSelectedListener =
-            createItemSelectedListener { selectedItem ->
-                tempEndInt = selectedItem
-            }
-
-        layoutRepeatOptionsBinding.spinnerRepeatIn.onItemSelectedListener =
-            createItemSelectedListener { selectedItem ->
-                tempEndInt = selectedItem
-            }
-
-        layoutRepeatOptionsBinding.tvDaily.setOnClickListener {
-            setRepeatOptions(
-                RemindOptions.RemindMode.DAILY, adapterIntervalDaily, adapterEndDaily, null
-            )
-        }
-
-        layoutRepeatOptionsBinding.tvWeekly.setOnClickListener {
-            setRepeatOptions(
-                RemindOptions.RemindMode.WEEKLY, adapterIntervalWeekly, adapterEndWeekly, null
-            )
-        }
-
-        layoutRepeatOptionsBinding.tvMonthly.setOnClickListener {
-            setRepeatOptions(
-                RemindOptions.RemindMode.MONTHLY,
-                adapterIntervalMonthly,
-                adapterEndMonthly,
-                adapterRepeatInMonthly
-            )
-        }
-
-        layoutRepeatOptionsBinding.switchRepeat.setOnClickListener {
-            if (layoutRepeatOptionsBinding.switchRepeat.isChecked) {
-                layoutRepeatOptionsBinding.tvDaily.performClick()
-            } else {
-                unSelectPreviousMode(tempMode)
-                layoutRepeatOptionsBinding.layoutRepeatEvery.visibility = View.GONE
-                layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.GONE
-                layoutRepeatOptionsBinding.layoutRepeatInMonth.visibility = View.GONE
-                layoutRepeatOptionsBinding.layoutRepeatEndIn.visibility = View.GONE
-            }
-        }
-
-        layoutRepeatOptionsBinding.btnCancel.setOnClickListener {
-            setReminderAlertDialog?.dismiss()
-        }
-
-        layoutRepeatOptionsBinding.btnConfirm.setOnClickListener {
-            Log.e(
-                "ChienNgan",
-                "Repeat confirm: tempMode= $tempMode -- temptInterval= $temptInterval -- tempRepeatIn= $tempRepeatIn -- tempEndInt=$tempEndInt"
-            )
-            selectedMode = tempMode
-            selectedInterval = temptInterval
-            selectedRepeatIn = tempRepeatIn
-            selectedEndInt = tempEndInt
-            setReminderAlertDialog?.dismiss()
-        }
-
-        layoutDatePickerBinding.tvRepeat.setOnClickListener {
-            when (selectedMode) {
-                RemindOptions.RemindMode.DAILY -> {
-                    layoutRepeatOptionsBinding.tvDaily.performClick()
-
-                    selectedInterval?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
-                            intervalDailyValues.indexOf(it)
-                        )
-                    }
-
-                    selectedEndInt?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
-                            endDailyValues.indexOf(it)
-                        )
-                    }
-                }
-                RemindOptions.RemindMode.WEEKLY -> {
-                    layoutRepeatOptionsBinding.tvWeekly.performClick()
-                    selectedInterval?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
-                            intervalWeeklyValues.indexOf(it)
-                        )
-                    }
-
-                    selectedEndInt?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
-                            endWeeklyValues.indexOf(it)
-                        )
-                    }
-
-                    when (selectedRepeatIn) {
-                        getString(R.string.text_mon) -> {
-                            layoutRepeatOptionsBinding.tvMonday.performClick()
-                        }
-                        getString(R.string.text_tue) -> {
-                            layoutRepeatOptionsBinding.tvTuesday.performClick()
-                        }
-                        getString(R.string.text_wed) -> {
-                            layoutRepeatOptionsBinding.tvWednesday.performClick()
-                        }
-                        getString(R.string.text_thu) -> {
-                            layoutRepeatOptionsBinding.tvThursday.performClick()
-                        }
-                        getString(R.string.text_fri) -> {
-                            layoutRepeatOptionsBinding.tvFriday.performClick()
-                        }
-                        getString(R.string.text_sat) -> {
-                            layoutRepeatOptionsBinding.tvSaturday.performClick()
-                        }
-                        getString(R.string.text_sun) -> {
-                            layoutRepeatOptionsBinding.tvSunday.performClick()
-                        }
-                        else -> {
-                            // do nothing
-                        }
-                    }
-                }
-                RemindOptions.RemindMode.MONTHLY -> {
-                    layoutRepeatOptionsBinding.tvMonthly.performClick()
-                    selectedInterval?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
-                            intervalMonthlyValues.indexOf(it)
-                        )
-                    }
-
-                    selectedEndInt?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
-                            endMonthlyValues.indexOf(it)
-                        )
-                    }
-
-                    selectedRepeatIn?.let {
-                        layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
-                            repeatMonthlyValues.indexOf(it)
-                        )
-                    }
-                }
-                else -> {
-                    // continue
-                }
-            }
-            setReminderAlertDialog?.show()
-        }
-    }
-
     private fun handleSelectDate(datePickerAlertDialog: AlertDialog?) {
         val today = Calendar.getInstance().timeInMillis
         layoutDatePickerBinding.datePicker.minDate = today
@@ -595,116 +411,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 layoutTimePickerBinding.tv3Hours.setBackgroundResource(R.drawable.bg_btn_date_unselected)
             }
         }
-    }
-
-    private fun setRepeatOptions(
-        mode: RemindOptions.RemindMode,
-        intervalAdapter: ArrayAdapter<CharSequence>,
-        endAdapter: ArrayAdapter<CharSequence>,
-        inAdapter: ArrayAdapter<CharSequence>?
-    ) {
-        unSelectPreviousMode(tempMode)
-
-        layoutRepeatOptionsBinding.switchRepeat.isChecked = true
-
-        layoutRepeatOptionsBinding.layoutRepeatEvery.visibility = View.VISIBLE
-        layoutRepeatOptionsBinding.spinnerRepeatEvery.adapter = intervalAdapter
-
-        layoutRepeatOptionsBinding.layoutRepeatEndIn.visibility = View.VISIBLE
-        layoutRepeatOptionsBinding.spinnerRepeatEnd.adapter = endAdapter
-
-        inAdapter?.let {
-            layoutRepeatOptionsBinding.layoutRepeatInMonth.visibility = View.VISIBLE
-            layoutRepeatOptionsBinding.spinnerRepeatIn.adapter = it
-        } ?: run {
-            layoutRepeatOptionsBinding.layoutRepeatInMonth.visibility = View.GONE
-        }
-
-        layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.GONE
-
-        tempMode = mode
-        when (mode) {
-            RemindOptions.RemindMode.DAILY -> layoutRepeatOptionsBinding.tvDaily.setBackgroundResource(
-                R.drawable.bg_btn_date_selected
-            )
-            RemindOptions.RemindMode.WEEKLY -> {
-                layoutRepeatOptionsBinding.tvWeekly.setBackgroundResource(R.drawable.bg_btn_date_selected)
-
-                layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.VISIBLE
-
-                val tvMappings = mapOf(
-                    getString(R.string.text_mon) to layoutRepeatOptionsBinding.tvMonday,
-                    getString(R.string.text_tue) to layoutRepeatOptionsBinding.tvTuesday,
-                    getString(R.string.text_wed) to layoutRepeatOptionsBinding.tvWednesday,
-                    getString(R.string.text_thu) to layoutRepeatOptionsBinding.tvThursday,
-                    getString(R.string.text_fri) to layoutRepeatOptionsBinding.tvFriday,
-                    getString(R.string.text_sat) to layoutRepeatOptionsBinding.tvSaturday,
-                    getString(R.string.text_sun) to layoutRepeatOptionsBinding.tvSunday
-                )
-
-                val tvDaysInWeek = listOf(
-                    layoutRepeatOptionsBinding.tvMonday,
-                    layoutRepeatOptionsBinding.tvTuesday,
-                    layoutRepeatOptionsBinding.tvWednesday,
-                    layoutRepeatOptionsBinding.tvThursday,
-                    layoutRepeatOptionsBinding.tvFriday,
-                    layoutRepeatOptionsBinding.tvSaturday,
-                    layoutRepeatOptionsBinding.tvSunday
-                )
-
-                for (tvDay in tvDaysInWeek) {
-                    tvDay.setOnClickListener {
-                        updateStateItemDayOfWeek(tvMappings)
-                        tempRepeatIn = tvDay.text.toString()
-                        tvDay.setBackgroundResource(R.drawable.bg_btn_date_selected)
-                    }
-                }
-            }
-            RemindOptions.RemindMode.MONTHLY -> layoutRepeatOptionsBinding.tvMonthly.setBackgroundResource(
-                R.drawable.bg_btn_date_selected
-            )
-            else -> {
-                // do nothing
-            }
-        }
-    }
-
-    private fun updateStateItemDayOfWeek(tvMappings: Map<String, TextView>) {
-        tvMappings[tempRepeatIn]?.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-    }
-
-    private fun createSpinnerAdapter(cxt: Context, arrayResId: Int): ArrayAdapter<CharSequence> {
-        val adapter = ArrayAdapter.createFromResource(
-            cxt, arrayResId, android.R.layout.simple_spinner_item
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        return adapter
-    }
-
-    private fun createItemSelectedListener(itemCallback: (String) -> Unit): OnItemSelectedListener {
-        return object : OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                val selectedItem = parent?.getItemAtPosition(pos).toString()
-                Log.e("ChienNgan", "onItemSelected: parent= $parent selectedItem= $selectedItem")
-                itemCallback(selectedItem)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing here
-            }
-        }
-    }
-
-    private fun createAlertDialog(
-        binding: ViewBinding,
-        context: Context?
-    ): AlertDialog? {
-        val dialogView = binding.root
-        val alertDialogBuilder = AlertDialog.Builder(context ?: return null)
-        alertDialogBuilder.setView(dialogView)
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.setCanceledOnTouchOutside(false)
-        return alertDialog
     }
 
     private fun setReminderClickListener(textView: TextView, minutes: Int) {

@@ -1,4 +1,4 @@
-package com.chpham.pomodoro_todo.todo.ui
+package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.content.Context
 import android.widget.TextView

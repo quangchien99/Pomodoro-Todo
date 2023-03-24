@@ -1,4 +1,4 @@
-package com.chpham.pomodoro_todo.todo.ui
+package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,7 +24,6 @@ import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategorySpinnerAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
 import com.chpham.pomodoro_todo.utils.Constants
-import com.chpham.pomodoro_todo.utils.createAlertDialog
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Calendar
@@ -52,8 +51,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private var selectedInterval: String? = null
     private var selectedRepeatIn: String? = null
     private var selectedEndInt: String? = null
-
-    private var tempDate: Long = -1
 
     companion object {
         const val TAG = "CreateTaskBottomSheetDialogFragment"
@@ -98,40 +95,34 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setUpDateAndRepetition() {
-        val datePickerAlertDialog = layoutDatePickerBinding.createAlertDialog(context ?: return)
 
-        val repeatOptionsDialog = RepeatOptionsDialog(context ?: return, layoutRepeatOptionsBinding)
+        val datePickerDialog =
+            DatePickerDialog(
+                context ?: return,
+                layoutDatePickerBinding,
+                layoutRepeatOptionsBinding
+            )
 
         binding.btnDay.setOnClickListener {
 
-            handleSelectDate(datePickerAlertDialog)
+            datePickerDialog.handleSelectDate(
+                currentDate = selectedDate,
+                currentMode = selectedMode,
+                currentInterval = selectedInterval,
+                currentRepeatIn = selectedRepeatIn,
+                currentEndInt = selectedEndInt
+            ) { date, mode, interval, repeatIn, endIn ->
+                selectedDate = date
+                selectedMode = mode
+                selectedInterval = interval
+                selectedRepeatIn = repeatIn
+                selectedEndInt = endIn
 
-            layoutDatePickerBinding.tvRepeat.setOnClickListener {
-                repeatOptionsDialog.handleSelectRepetition(
-                    currentMode = selectedMode,
-                    currentInterval = selectedInterval,
-                    currentRepeatIn = selectedRepeatIn,
-                    currentEndInt = selectedEndInt
-                ) { mode, interval, repeatIn, endIn ->
-                    selectedMode = mode
-                    selectedInterval = interval
-                    selectedRepeatIn = repeatIn
-                    selectedEndInt = endIn
-                }
-            }
-
-            layoutDatePickerBinding.btnCancel.setOnClickListener {
                 updateSelectedDayText(
                     Calendar.getInstance().apply {
                         this.timeInMillis = selectedDate
                     }
                 )
-                datePickerAlertDialog.dismiss()
-            }
-
-            layoutDatePickerBinding.btnConfirm.setOnClickListener {
-                selectedDate = tempDate
-                datePickerAlertDialog.dismiss()
             }
         }
     }
@@ -258,22 +249,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             dialog.dismiss()
         }
         dialog.show()
-    }
-
-    private fun handleSelectDate(datePickerAlertDialog: AlertDialog?) {
-        val today = Calendar.getInstance().timeInMillis
-        layoutDatePickerBinding.datePicker.minDate = today
-        layoutDatePickerBinding.datePicker.date = selectedDate
-
-        datePickerAlertDialog?.show()
-
-        layoutDatePickerBinding.datePicker.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.set(year, month, dayOfMonth)
-            tempDate = selectedCalendar.timeInMillis
-
-            updateSelectedDayText(selectedCalendar)
-        }
     }
 
     private fun updateSelectedDayText(selectedCalendar: Calendar) {

@@ -1,4 +1,4 @@
-package com.chpham.pomodoro_todo.todo.ui
+package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.content.Context
 import android.view.View
@@ -46,7 +46,18 @@ class RepeatOptionsDialog(
 
     private lateinit var repeatResultHandler: (RemindOptions.RemindMode, String?, String?, String?) -> Unit
 
+    private val tvMappings: Map<String, TextView> = mapOf(
+        context.getString(R.string.text_mon) to layoutRepeatOptionsBinding.tvMonday,
+        context.getString(R.string.text_tue) to layoutRepeatOptionsBinding.tvTuesday,
+        context.getString(R.string.text_wed) to layoutRepeatOptionsBinding.tvWednesday,
+        context.getString(R.string.text_thu) to layoutRepeatOptionsBinding.tvThursday,
+        context.getString(R.string.text_fri) to layoutRepeatOptionsBinding.tvFriday,
+        context.getString(R.string.text_sat) to layoutRepeatOptionsBinding.tvSaturday,
+        context.getString(R.string.text_sun) to layoutRepeatOptionsBinding.tvSunday
+    )
+
     init {
+
         selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
         selectedInterval = null
         selectedRepeatIn = null
@@ -128,6 +139,10 @@ class RepeatOptionsDialog(
         }
 
         layoutRepeatOptionsBinding.btnCancel.setOnClickListener {
+            selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
+            selectedInterval = null
+            selectedRepeatIn = null
+            selectedEndInt = null
             setReminderAlertDialog.dismiss()
         }
 
@@ -254,8 +269,28 @@ class RepeatOptionsDialog(
                 }
             }
             else -> {
-                // continue
+                resetView()
+                layoutRepeatOptionsBinding.tvDaily.setBackgroundResource(
+                    R.drawable.bg_btn_date_unselected
+                )
+                layoutRepeatOptionsBinding.tvWeekly.setBackgroundResource(
+                    R.drawable.bg_btn_date_unselected
+                )
+                layoutRepeatOptionsBinding.tvMonthly.setBackgroundResource(
+                    R.drawable.bg_btn_date_unselected
+                )
             }
+        }
+    }
+
+    private fun resetView() {
+        layoutRepeatOptionsBinding.switchRepeat.isChecked = false
+        layoutRepeatOptionsBinding.layoutRepeatEvery.visibility = View.GONE
+        layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.GONE
+        layoutRepeatOptionsBinding.layoutRepeatInMonth.visibility = View.GONE
+        layoutRepeatOptionsBinding.layoutRepeatEndIn.visibility = View.GONE
+        tvMappings.values.forEach {
+            it.setBackgroundResource(R.drawable.bg_btn_date_unselected)
         }
     }
 
@@ -294,16 +329,6 @@ class RepeatOptionsDialog(
 
                 layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.VISIBLE
 
-                val tvMappings = mapOf(
-                    context.getString(R.string.text_mon) to layoutRepeatOptionsBinding.tvMonday,
-                    context.getString(R.string.text_tue) to layoutRepeatOptionsBinding.tvTuesday,
-                    context.getString(R.string.text_wed) to layoutRepeatOptionsBinding.tvWednesday,
-                    context.getString(R.string.text_thu) to layoutRepeatOptionsBinding.tvThursday,
-                    context.getString(R.string.text_fri) to layoutRepeatOptionsBinding.tvFriday,
-                    context.getString(R.string.text_sat) to layoutRepeatOptionsBinding.tvSaturday,
-                    context.getString(R.string.text_sun) to layoutRepeatOptionsBinding.tvSunday
-                )
-
                 val tvDaysInWeek = listOf(
                     layoutRepeatOptionsBinding.tvMonday,
                     layoutRepeatOptionsBinding.tvTuesday,
@@ -332,6 +357,9 @@ class RepeatOptionsDialog(
     }
 
     private fun unSelectPreviousMode(mode: RemindOptions.RemindMode) {
+        layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(0)
+        layoutRepeatOptionsBinding.spinnerRepeatIn.setSelection(0)
+        layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(0)
         when (mode) {
             RemindOptions.RemindMode.DAILY -> {
                 layoutRepeatOptionsBinding.tvDaily.setBackgroundResource(R.drawable.bg_btn_date_unselected)

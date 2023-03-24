@@ -50,6 +50,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private var selectedMode: RemindOptions.RemindMode = RemindOptions.RemindMode.UN_SPECIFIED
     private var selectedInterval: String? = null
     private var selectedRepeatIn: String? = null
+    private val selectedRepeatInWeek: MutableList<String> = mutableListOf()
     private var selectedEndInt: String? = null
 
     companion object {
@@ -110,12 +111,15 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 currentMode = selectedMode,
                 currentInterval = selectedInterval,
                 currentRepeatIn = selectedRepeatIn,
+                currentRepeatInWeek = selectedRepeatInWeek,
                 currentEndInt = selectedEndInt
-            ) { date, mode, interval, repeatIn, endIn ->
+            ) { date, mode, interval, repeatIn, repeatInWeek, endIn ->
                 selectedDate = date
                 selectedMode = mode
                 selectedInterval = interval
                 selectedRepeatIn = repeatIn
+                selectedRepeatInWeek.clear()
+                selectedRepeatInWeek.addAll(repeatInWeek)
                 selectedEndInt = endIn
 
                 updateSelectedDayText(

@@ -12,18 +12,20 @@ import com.chpham.pomodoro_todo.databinding.LayoutRepeatOptionsBinding
 import com.chpham.pomodoro_todo.utils.createAlertDialog
 
 class RepeatOptionsDialog(
-    private val context: Context,
+    context: Context,
     private val layoutRepeatOptionsBinding: LayoutRepeatOptionsBinding
 ) {
 
     private var selectedMode: RemindOptions.RemindMode
     private var selectedInterval: String?
     private var selectedRepeatIn: String?
+    private val selectedRepeatInWeek: MutableList<String> = mutableListOf()
     private var selectedEndInt: String?
 
     private var tempMode: RemindOptions.RemindMode?
     private var temptInterval: String?
     private var tempRepeatIn: String?
+    private val tempRepeatInWeek: MutableList<String> = mutableListOf()
     private var tempEndInt: String?
 
     private val intervalDailyValues: Array<String>
@@ -44,7 +46,7 @@ class RepeatOptionsDialog(
 
     private val setReminderAlertDialog: AlertDialog
 
-    private lateinit var repeatResultHandler: (RemindOptions.RemindMode, String?, String?, String?) -> Unit
+    private lateinit var repeatResultHandler: (RemindOptions.RemindMode, String?, String?, List<String>, String?) -> Unit
 
     private val tvMappings: Map<String, TextView> = mapOf(
         context.getString(R.string.text_mon) to layoutRepeatOptionsBinding.tvMonday,
@@ -139,30 +141,36 @@ class RepeatOptionsDialog(
         }
 
         layoutRepeatOptionsBinding.btnCancel.setOnClickListener {
-            selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
-            selectedInterval = null
-            selectedRepeatIn = null
-            selectedEndInt = null
             setReminderAlertDialog.dismiss()
         }
 
         layoutRepeatOptionsBinding.btnConfirm.setOnClickListener {
-            tempMode?.let {
-                selectedMode = it
-                selectedInterval = temptInterval
-                selectedRepeatIn = tempRepeatIn
-                selectedEndInt = tempEndInt
+            if (layoutRepeatOptionsBinding.switchRepeat.isChecked) {
+                tempMode?.let {
+                    selectedMode = it
+                    selectedInterval = temptInterval
+                    selectedRepeatIn = tempRepeatIn
+                    selectedRepeatInWeek.clear()
+                    selectedRepeatInWeek.addAll(tempRepeatInWeek)
+                    selectedEndInt = tempEndInt
+                }
+            } else {
+                selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
+                selectedInterval = null
+                selectedRepeatIn = null
+                selectedRepeatInWeek.clear()
+                selectedEndInt = null
             }
-            setReminderAlertDialog.dismiss()
-        }
 
-        setReminderAlertDialog.setOnDismissListener {
             repeatResultHandler.invoke(
                 selectedMode,
                 selectedInterval,
                 selectedRepeatIn,
+                selectedRepeatInWeek,
                 selectedEndInt
             )
+
+            setReminderAlertDialog.dismiss()
         }
     }
 
@@ -170,38 +178,36 @@ class RepeatOptionsDialog(
         currentMode: RemindOptions.RemindMode = RemindOptions.RemindMode.UN_SPECIFIED,
         currentInterval: String? = null,
         currentRepeatIn: String? = null,
+        currentRepeatInWeek: List<String>,
         currentEndInt: String? = null,
-        repeatResultHandler: (RemindOptions.RemindMode, String?, String?, String?) -> Unit
+        repeatResultHandler: (RemindOptions.RemindMode, String?, String?, List<String>, String?) -> Unit
     ) {
         this.repeatResultHandler = repeatResultHandler
 
-        handlePreviousData(
-            currentMode = currentMode,
-            currentInterval = currentInterval,
-            currentRepeatIn = currentRepeatIn,
-            currentEndInt = currentEndInt
-        )
+        this.tempMode = currentMode
+        this.temptInterval = currentInterval
+        this.tempRepeatIn = currentRepeatIn
+        this.tempRepeatInWeek.clear()
+        this.tempRepeatInWeek.addAll(currentRepeatInWeek)
+        this.tempEndInt = currentEndInt
+
+        handlePreviousData()
 
         setReminderAlertDialog.show()
     }
 
-    private fun handlePreviousData(
-        currentMode: RemindOptions.RemindMode = RemindOptions.RemindMode.UN_SPECIFIED,
-        currentInterval: String? = null,
-        currentRepeatIn: String? = null,
-        currentEndInt: String? = null
-    ) {
-        when (currentMode) {
+    private fun handlePreviousData() {
+        when (tempMode) {
             RemindOptions.RemindMode.DAILY -> {
                 layoutRepeatOptionsBinding.tvDaily.performClick()
 
-                currentInterval?.let {
+                temptInterval?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
                         intervalDailyValues.indexOf(it)
                     )
                 }
 
-                currentEndInt?.let {
+                tempEndInt?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
                         endDailyValues.indexOf(it)
                     )
@@ -209,60 +215,41 @@ class RepeatOptionsDialog(
             }
             RemindOptions.RemindMode.WEEKLY -> {
                 layoutRepeatOptionsBinding.tvWeekly.performClick()
-                currentInterval?.let {
+                temptInterval?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
                         intervalWeeklyValues.indexOf(it)
                     )
                 }
 
-                currentEndInt?.let {
+                tempEndInt?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
                         endWeeklyValues.indexOf(it)
                     )
                 }
 
-                when (currentRepeatIn) {
-                    context.getString(R.string.text_mon) -> {
-                        layoutRepeatOptionsBinding.tvMonday.performClick()
-                    }
-                    context.getString(R.string.text_tue) -> {
-                        layoutRepeatOptionsBinding.tvTuesday.performClick()
-                    }
-                    context.getString(R.string.text_wed) -> {
-                        layoutRepeatOptionsBinding.tvWednesday.performClick()
-                    }
-                    context.getString(R.string.text_thu) -> {
-                        layoutRepeatOptionsBinding.tvThursday.performClick()
-                    }
-                    context.getString(R.string.text_fri) -> {
-                        layoutRepeatOptionsBinding.tvFriday.performClick()
-                    }
-                    context.getString(R.string.text_sat) -> {
-                        layoutRepeatOptionsBinding.tvSaturday.performClick()
-                    }
-                    context.getString(R.string.text_sun) -> {
-                        layoutRepeatOptionsBinding.tvSunday.performClick()
-                    }
-                    else -> {
-                        // do nothing
+                tvMappings.forEach { (dayOfWeek, textView) ->
+                    if (tempRepeatInWeek.contains(dayOfWeek)) {
+                        textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
+                    } else {
+                        textView.setBackgroundResource(R.drawable.bg_btn_date_unselected)
                     }
                 }
             }
             RemindOptions.RemindMode.MONTHLY -> {
                 layoutRepeatOptionsBinding.tvMonthly.performClick()
-                currentInterval?.let {
+                temptInterval?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEvery.setSelection(
                         intervalMonthlyValues.indexOf(it)
                     )
                 }
 
-                currentRepeatIn?.let {
+                tempRepeatIn?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatIn.setSelection(
                         repeatMonthlyValues.indexOf(it)
                     )
                 }
 
-                currentEndInt?.let {
+                tempEndInt?.let {
                     layoutRepeatOptionsBinding.spinnerRepeatEnd.setSelection(
                         endMonthlyValues.indexOf(it)
                     )
@@ -329,21 +316,15 @@ class RepeatOptionsDialog(
 
                 layoutRepeatOptionsBinding.layoutRepeatInWeek.visibility = View.VISIBLE
 
-                val tvDaysInWeek = listOf(
-                    layoutRepeatOptionsBinding.tvMonday,
-                    layoutRepeatOptionsBinding.tvTuesday,
-                    layoutRepeatOptionsBinding.tvWednesday,
-                    layoutRepeatOptionsBinding.tvThursday,
-                    layoutRepeatOptionsBinding.tvFriday,
-                    layoutRepeatOptionsBinding.tvSaturday,
-                    layoutRepeatOptionsBinding.tvSunday
-                )
-
-                for (tvDay in tvDaysInWeek) {
-                    tvDay.setOnClickListener {
-                        updateStateItemDayOfWeek(tvMappings)
-                        tempRepeatIn = tvDay.text.toString()
-                        tvDay.setBackgroundResource(R.drawable.bg_btn_date_selected)
+                tvMappings.forEach { (dayOfWeek, textView) ->
+                    textView.setOnClickListener {
+                        if (tempRepeatInWeek.contains(dayOfWeek)) {
+                            textView.setBackgroundResource(R.drawable.bg_btn_date_unselected)
+                            tempRepeatInWeek.remove(dayOfWeek)
+                        } else {
+                            textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
+                            tempRepeatInWeek.add(dayOfWeek)
+                        }
                     }
                 }
             }

@@ -20,9 +20,10 @@ class DatePickerDialog(
     private var selectedMode: RemindOptions.RemindMode
     private var selectedInterval: String?
     private var selectedRepeatIn: String?
+    private val selectedRepeatInWeek: MutableList<String> = mutableListOf()
     private var selectedEndInt: String?
 
-    private lateinit var dateResultHandler: (Long, RemindOptions.RemindMode, String?, String?, String?) -> Unit
+    private lateinit var dateResultHandler: (Long, RemindOptions.RemindMode, String?, String?, List<String>, String?) -> Unit
 
     private var datePickerAlertDialog: AlertDialog
 
@@ -48,13 +49,16 @@ class DatePickerDialog(
         currentMode: RemindOptions.RemindMode = RemindOptions.RemindMode.UN_SPECIFIED,
         currentInterval: String? = null,
         currentRepeatIn: String? = null,
+        currentRepeatInWeek: List<String>,
         currentEndInt: String? = null,
-        dateResultHandler: (Long, RemindOptions.RemindMode, String?, String?, String?) -> Unit
+        dateResultHandler: (Long, RemindOptions.RemindMode, String?, String?, List<String>, String?) -> Unit
     ) {
         this.dateResultHandler = dateResultHandler
         this.selectedMode = currentMode
         this.selectedInterval = currentInterval
         this.selectedRepeatIn = currentRepeatIn
+        this.selectedRepeatInWeek.clear()
+        this.selectedRepeatInWeek.addAll(currentRepeatInWeek)
         this.selectedEndInt = currentEndInt
 
         handlePreviousData(currentDate)
@@ -64,6 +68,20 @@ class DatePickerDialog(
 
     private fun handlePreviousData(currentTime: Long = Calendar.getInstance().timeInMillis) {
         layoutDatePickerBinding.datePicker.date = currentTime
+        when (selectedMode) {
+            RemindOptions.RemindMode.DAILY ->
+                layoutDatePickerBinding.tvRepeatValue.text =
+                    context.getText(R.string.text_daily)
+            RemindOptions.RemindMode.WEEKLY ->
+                layoutDatePickerBinding.tvRepeatValue.text =
+                    context.getText(R.string.text_weekly)
+            RemindOptions.RemindMode.MONTHLY ->
+                layoutDatePickerBinding.tvRepeatValue.text =
+                    context.getText(R.string.text_monthly)
+            else -> {
+                // do nothing
+            }
+        }
     }
 
     private fun initListener() {
@@ -83,11 +101,14 @@ class DatePickerDialog(
                     currentMode = selectedMode,
                     currentInterval = selectedInterval,
                     currentRepeatIn = selectedRepeatIn,
+                    currentRepeatInWeek = selectedRepeatInWeek,
                     currentEndInt = selectedEndInt,
-                    repeatResultHandler = { mode, interval, repeatIn, endIn ->
+                    repeatResultHandler = { mode, interval, repeatIn, repeatInWeek, endIn ->
                         selectedMode = mode
                         selectedInterval = interval
                         selectedRepeatIn = repeatIn
+                        selectedRepeatInWeek.clear()
+                        selectedRepeatInWeek.addAll(repeatInWeek)
                         selectedEndInt = endIn
 
                         when (mode) {
@@ -115,7 +136,12 @@ class DatePickerDialog(
 
             btnConfirm.setOnClickListener {
                 dateResultHandler.invoke(
-                    selectedDate, selectedMode, selectedInterval, selectedRepeatIn, selectedEndInt
+                    selectedDate,
+                    selectedMode,
+                    selectedInterval,
+                    selectedRepeatIn,
+                    selectedRepeatInWeek,
+                    selectedEndInt
                 )
                 datePickerAlertDialog.dismiss()
             }
@@ -127,6 +153,7 @@ class DatePickerDialog(
         selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
         selectedInterval = null
         selectedRepeatIn = null
+        selectedRepeatInWeek.clear()
         selectedEndInt = null
     }
 }

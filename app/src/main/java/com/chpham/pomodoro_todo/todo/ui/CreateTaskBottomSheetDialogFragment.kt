@@ -216,84 +216,15 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun setUpReminder() {
-        val timePickerAlertDialog = layoutTimePickerBinding.createAlertDialog(context ?: return)
+        val reminderDialog = ReminderDialog(context ?: return, layoutTimePickerBinding)
         binding.btnReminder.setOnClickListener {
-            timePickerAlertDialog.show()
-
-            if (selectedRemindBefore == 0) {
-                layoutTimePickerBinding.switchReminder.isChecked = false
-            }
-
-            var timeInMillis: Long = System.currentTimeMillis()
-            val calendar = Calendar.getInstance()
-
-            layoutTimePickerBinding.timerPicker.setOnTimeChangedListener { _, hourOfDay, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
-                calendar.set(Calendar.SECOND, 0)
-                timeInMillis = calendar.timeInMillis
-
-                selectedTime = timeInMillis
-            }
-
-            with(layoutTimePickerBinding) {
-                setReminderClickListener(tvNone, 0)
-                setReminderClickListener(tv5Minutes, 5)
-                setReminderClickListener(tv10Minutes, 10)
-                setReminderClickListener(tv15Minutes, 15)
-                setReminderClickListener(tv30Minutes, 30)
-                setReminderClickListener(tv1Hour, 60)
-                setReminderClickListener(tv2Hours, 120)
-                setReminderClickListener(tv3Hours, 180)
-
-                layoutTimePickerBinding.switchReminder.setOnClickListener {
-                    if (layoutTimePickerBinding.switchReminder.isChecked) {
-                        tv5Minutes.performClick()
-                    } else {
-                        tvNone.performClick()
-                    }
-                }
-
-                btnCancel.setOnClickListener {
-                    timePickerAlertDialog?.dismiss()
-                }
-
-                btnConfirm.setOnClickListener {
-                    if (layoutTimePickerBinding.switchReminder.isChecked) {
-                        binding.btnReminder.text = resources.getString(
-                            R.string.text_remind_before_format,
-                            if (selectedRemindBefore < 60) {
-                                selectedRemindBefore.toString()
-                            } else {
-                                (selectedRemindBefore / 60).toString()
-                            },
-                            if (selectedRemindBefore < 60) {
-                                getString(R.string.text_minutes)
-                            } else if (selectedRemindBefore == 60) {
-                                getString(R.string.text_hour)
-                            } else {
-                                getString(R.string.text_hours)
-                            }
-                        )
-                        binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
-                            resources.getDrawable(
-                                R.drawable.ic_alarm_on, null
-                            ),
-                            null, null, null
-                        )
-                    } else {
-                        binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
-                            resources.getDrawable(
-                                R.drawable.ic_alarm, null
-                            ),
-                            null, null, null
-                        )
-                        binding.btnReminder.text = resources.getString(R.string.text_reminder)
-                    }
-                    timePickerAlertDialog?.dismiss()
-                }
+            reminderDialog.handleSetUpReminder(
+                currentTime = selectedTime,
+                currentRemindBefore = selectedRemindBefore
+            ) { time, remindBefore ->
+                selectedTime = time
+                selectedRemindBefore = remindBefore
             }
         }
     }
@@ -364,62 +295,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     }"
                 binding.btnDay.text = selectedDate
             }
-        }
-    }
-
-    private fun unSelectPreviousMode(mode: RemindOptions.RemindMode) {
-        when (mode) {
-            RemindOptions.RemindMode.DAILY -> {
-                layoutRepeatOptionsBinding.tvDaily.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            RemindOptions.RemindMode.WEEKLY -> {
-                layoutRepeatOptionsBinding.tvWeekly.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            RemindOptions.RemindMode.MONTHLY -> {
-                layoutRepeatOptionsBinding.tvMonthly.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            else -> {
-                // do nothing
-            }
-        }
-    }
-
-    private fun unSelectPreviousOptions(remindBefore: Int) {
-        when (remindBefore) {
-            0 -> {
-                layoutTimePickerBinding.tvNone.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            5 -> {
-                layoutTimePickerBinding.tv5Minutes.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            10 -> {
-                layoutTimePickerBinding.tv10Minutes.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            15 -> {
-                layoutTimePickerBinding.tv15Minutes.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            30 -> {
-                layoutTimePickerBinding.tv30Minutes.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            60 -> {
-                layoutTimePickerBinding.tv1Hour.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            120 -> {
-                layoutTimePickerBinding.tv2Hours.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-            180 -> {
-                layoutTimePickerBinding.tv3Hours.setBackgroundResource(R.drawable.bg_btn_date_unselected)
-            }
-        }
-    }
-
-    private fun setReminderClickListener(textView: TextView, minutes: Int) {
-        textView.setOnClickListener {
-            unSelectPreviousOptions(selectedRemindBefore)
-            layoutTimePickerBinding.tvReminderValue.text = textView.text
-            textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
-            selectedRemindBefore = minutes
-            layoutTimePickerBinding.switchReminder.isChecked = minutes != 0
         }
     }
 

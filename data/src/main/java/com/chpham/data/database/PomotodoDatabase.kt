@@ -1,6 +1,7 @@
 package com.chpham.data.database
 
 import androidx.room.Database
+import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.chpham.data.database.dao.TaskDao
 import com.chpham.data.database.entity.TaskEntity
@@ -18,9 +19,12 @@ import com.chpham.data.database.entity.TaskEntity
  * @authoredBy Chien.Ph
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
-@Database(entities = [TaskEntity::class], version = 1)
+@Database(
+    entities = [TaskEntity::class],
+    version = 1
+)
 @TypeConverters(Converters::class)
-abstract class PomotodoDatabase {
+abstract class PomotodoDatabase : RoomDatabase() {
 
     /**
      * Returns an instance of TaskDao which provides access to the task table in the database.

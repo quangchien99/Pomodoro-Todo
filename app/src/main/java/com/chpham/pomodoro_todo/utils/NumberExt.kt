@@ -1,7 +1,5 @@
 package com.chpham.pomodoro_todo.utils
 
-import android.content.Context
-import android.util.TypedValue
 import java.util.Calendar
 
 /**
@@ -63,13 +61,4 @@ fun Long.toHourMinuteString(): String {
         hour,
         minute
     ) // format the hour and minute values into a string
-}
-
-// Extension function to convert dp to px
-fun Int.dpToPx(context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        this.toFloat(),
-        context.resources.displayMetrics
-    ).toInt()
 }

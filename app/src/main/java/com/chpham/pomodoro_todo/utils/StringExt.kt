@@ -3,6 +3,13 @@ package com.chpham.pomodoro_todo.utils
 import android.content.Context
 import com.chpham.pomodoro_todo.R
 
+/**
+ * @since March 19, 2023
+ * @version 1.0
+ * @authoredBy Chien.Ph
+ * © copyright 2023 Chien.Ph. All rights reserved.
+ */
+
 fun String.convertToDays(context: Context): Int {
     val parts = this.split(" ")
     val num = parts[0].toInt()

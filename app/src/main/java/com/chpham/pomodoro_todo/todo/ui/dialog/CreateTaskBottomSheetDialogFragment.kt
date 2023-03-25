@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskPriority
@@ -25,6 +26,7 @@ import com.chpham.pomodoro_todo.databinding.LayoutRepeatOptionsBinding
 import com.chpham.pomodoro_todo.databinding.LayoutTimePickerBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategorySpinnerAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.PrioritySpinnerAdapter
+import com.chpham.pomodoro_todo.todo.viewmodel.TodoListViewModel
 import com.chpham.pomodoro_todo.utils.convertToDays
 import com.chpham.pomodoro_todo.utils.getDay
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -51,6 +53,9 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private var selectedRepeatIn: String? = null
     private val selectedRepeatInWeek: MutableList<String> = mutableListOf()
     private var selectedEndInt: String? = null
+
+    // Get a reference to the parent fragment's view model
+    private val todoListViewModel: TodoListViewModel by activityViewModels()
 
     companion object {
         const val TAG = "CreateTaskBottomSheetDialogFragment"
@@ -113,6 +118,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     description = binding.edtTaskDescription.text.toString()
                 )
                 Log.e("ChienNgan", "New Task= $task")
+                todoListViewModel.insertTask(task)
             }
         }
     }

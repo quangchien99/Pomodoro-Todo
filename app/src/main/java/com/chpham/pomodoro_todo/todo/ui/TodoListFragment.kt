@@ -23,7 +23,9 @@ import com.chpham.pomodoro_todo.todo.ui.dialog.CreateTaskBottomSheetDialogFragme
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_DONE
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
     companion object {

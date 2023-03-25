@@ -12,7 +12,9 @@ import com.chpham.pomodoro_todo.pomodoro.ui.PomodoroFragment
 import com.chpham.pomodoro_todo.settings.ui.SettingsFragment
 import com.chpham.pomodoro_todo.todo.ui.TodoListFragment
 import com.google.android.material.navigation.NavigationBarView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     companion object {

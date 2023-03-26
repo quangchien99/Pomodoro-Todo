@@ -37,13 +37,13 @@ class CategorySpinnerAdapter(context: Context, private val items: MutableList<St
                         com.chpham.domain.R.color.blue
                     )
                 )
-                imageView.setImageResource(R.drawable.ic_add)
+                imageView.setImageResource(R.drawable.ic_add_label)
             }
             0 -> {
                 imageView.setImageResource(R.drawable.ic_none_category)
             }
             else -> {
-                imageView.setImageResource(R.drawable.ic_category)
+                imageView.setImageResource(R.drawable.ic_label)
             }
         }
         return row

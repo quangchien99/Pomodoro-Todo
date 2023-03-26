@@ -8,13 +8,22 @@
     android:layout_margin="@dimen/margin_8"
     android:gravity="center">
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/margin_4"
+        android:background="@color/grey" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewItemHeader"
-        android:layout_width="@dimen/width_200"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/height_36"
+        android:layout_below="@id/divider"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         app:cardBackgroundColor="@color/blueLight"
-        app:cardCornerRadius="@dimen/radius_16">
+        app:cardCornerRadius="@dimen/radius_8">
 
         <TextView
             android:id="@+id/tvHeader"
@@ -32,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/cardViewItemHeader"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_8"
         tools:text="Drag your in progress tasks here" />
 </RelativeLayout>

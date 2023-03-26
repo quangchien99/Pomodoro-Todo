@@ -107,7 +107,11 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     timeCreated = System.currentTimeMillis(),
                     priority = selectedPriority,
                     dueDate = selectedDate,
-                    category = selectedCategory,
+                    category = if (selectedCategory == getString(R.string.text_no_category)) {
+                        null
+                    } else {
+                        selectedCategory
+                    },
                     deadline = selectedTime,
                     remindOptions = RemindOptions(
                         mode = selectedMode,

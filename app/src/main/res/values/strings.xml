@@ -75,6 +75,7 @@
     <string name="text_weeks">weeks</string>
     <string name="text_month">month</string>
     <string name="text_months">months</string>
+    <string name="text_no_category">No Category</string>
     <!--    to do list fragment-->
 
 </resources>

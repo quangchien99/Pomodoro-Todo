@@ -4,12 +4,15 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.Task
+import com.chpham.domain.model.TaskPriority
 import com.chpham.domain.model.TaskState
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.databinding.ItemTaskBinding
@@ -92,6 +95,37 @@ class TasksAdapter(
                     StrikethroughSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 binding.tvTaskName.text = spannableString
+            }
+            task.category?.let {
+                binding.tvCategory.text = it
+                binding.tvCategory.visibility = View.VISIBLE
+            }
+            if (task.remindOptions?.mode != RemindOptions.RemindMode.UN_SPECIFIED) {
+                binding.imgRepeat.visibility = View.VISIBLE
+            }
+            if (!task.description.isNullOrEmpty()) {
+                binding.tvTaskDescription.text = task.description
+                binding.tvTaskDescription.visibility = View.VISIBLE
+            }
+            when (task.priority) {
+                TaskPriority.LOW -> {
+                    binding.imgPriority.setImageResource(R.drawable.ic_priority_low)
+                    binding.imgPriority.visibility = View.VISIBLE
+                }
+                TaskPriority.MEDIUM -> {
+                    binding.imgPriority.setImageResource(R.drawable.ic_priority_medium)
+                    binding.imgPriority.visibility = View.VISIBLE
+                }
+                TaskPriority.HIGH -> {
+                    binding.imgPriority.setImageResource(R.drawable.ic_priority_high)
+                    binding.imgPriority.visibility = View.VISIBLE
+                }
+                else -> {
+                    // do nothing
+                }
+            }
+            if (task.remindBefore != 0 && task.deadline != 0L) {
+                binding.imgRemind.visibility = View.VISIBLE
             }
             binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
             binding.cardViewTask.setOnClickListener {

@@ -5,10 +5,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardViewTask"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/height_64"
+    android:layout_height="@dimen/height_80"
     android:layout_margin="@dimen/margin_8"
     app:cardBackgroundColor="#D8E8FF"
     app:cardCornerRadius="@dimen/radius_16">
+
+    <TextView
+        android:id="@+id/tvCategory"
+        android:layout_width="@dimen/width_200"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_16"
+        android:drawablePadding="@dimen/padding_8"
+        android:gravity="center_vertical"
+        android:textColor="@color/blue"
+        android:textStyle="italic"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_label"
+        tools:text="Study" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,23 +40,68 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/margin_4">
 
-            <TextView
-                android:id="@+id/tvTaskName"
+            <LinearLayout
+                android:id="@+id/layoutNameDescriptionDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_32"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_16"
-                tools:text="It's time to go shopping" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvTaskDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tvTaskName"
-                tools:text="03-22" />
+                <TextView
+                    android:id="@+id/tvTaskName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_32"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_16"
+                    android:textStyle="bold"
+                    tools:text="It's time to go shopping" />
+
+                <TextView
+                    android:id="@+id/tvTaskDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_32"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="It's time to go shopping" />
+
+                <TextView
+                    android:id="@+id/tvTaskDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="03-22" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imgRepeat"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="80dp"
+                android:src="@drawable/ic_repeat"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/imgRemind"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="48dp"
+                android:src="@drawable/ic_alarm"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/imgPriority"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/margin_16"
+                android:src="@drawable/ic_priority_high"
+                android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

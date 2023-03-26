@@ -1,5 +1,7 @@
 package com.chpham.domain.model
 
+import java.util.Calendar
+
 /**
  * Represents a task with various properties
  *
@@ -14,6 +16,12 @@ data class Task(
     val timeCreated: Long,
     val state: TaskState = TaskState.TO_DO,
     val priority: TaskPriority = TaskPriority.MEDIUM,
+    val dueDate: Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis,
     val remindOptions: RemindOptions? = null,
     val timeFinished: Long? = null,
     val deadline: Long? = null,

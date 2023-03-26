@@ -16,6 +16,7 @@ import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.databinding.ItemHeaderBinding
 import com.chpham.pomodoro_todo.databinding.ItemTaskBinding
 import com.chpham.pomodoro_todo.utils.Constants
+import com.chpham.pomodoro_todo.utils.toDayMonthYearString
 
 /**
  * An adapter for a RecyclerView that displays a list of tasks.
@@ -121,7 +122,7 @@ class TasksAndHeadersAdapter(
                 )
                 binding.tvTaskName.text = spannableString
             }
-            binding.tvTaskDate.text = task.deadline.toString()
+            binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
             binding.cardViewTask.setOnClickListener {
                 taskClickListener.onTaskClick(task.id, binding.cardViewTask)
             }

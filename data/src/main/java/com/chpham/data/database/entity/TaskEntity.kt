@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.TaskPriority
 import com.chpham.domain.model.TaskState
+import java.util.Calendar
 
 /**
  * Entity class representing a single task in the local database.
@@ -14,6 +15,7 @@ import com.chpham.domain.model.TaskState
  * @param timeCreated The time, in milliseconds since the Unix epoch, when the task was created.
  * @param state The current state of the task. Defaults to [TaskState.TO_DO].
  * @param priority The priority level of the task. Defaults to [TaskPriority.MEDIUM].
+ * @param dueDate the due date of the task.
  * @param remindOptions The options for reminding the user about the task. Defaults to [RemindOptions] with [RemindOptions.RemindMode.UN_SPECIFIED].
  * @param timeFinished The time, in milliseconds since the Unix epoch, when the task was completed. Defaults to null.
  * @param deadline The time, in milliseconds since the Unix epoch, by which the task should be completed. Defaults to null.
@@ -26,7 +28,7 @@ import com.chpham.domain.model.TaskState
  * @authoredBy Chien.Ph
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
-@Entity(tableName = "Task")
+@Entity(tableName = "Tasks")
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -39,6 +41,13 @@ data class TaskEntity(
     val state: TaskState = TaskState.TO_DO,
     @ColumnInfo(name = "priority")
     val priority: TaskPriority = TaskPriority.MEDIUM,
+    @ColumnInfo(name = "dueDate")
+    val dueDate: Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis,
     @ColumnInfo(name = "remindOptions")
     val remindOptions: RemindOptions = RemindOptions(RemindOptions.RemindMode.UN_SPECIFIED),
     @ColumnInfo(name = "timeFinished")

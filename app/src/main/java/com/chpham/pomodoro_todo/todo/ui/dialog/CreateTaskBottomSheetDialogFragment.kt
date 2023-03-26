@@ -39,7 +39,12 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var layoutTimePickerBinding: LayoutTimePickerBinding
     private lateinit var layoutRepeatOptionsBinding: LayoutRepeatOptionsBinding
 
-    private var selectedDate: Long = Calendar.getInstance().timeInMillis
+    private var selectedDate: Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
 
     private var selectedTime: Long = System.currentTimeMillis()
     private var selectedRemindBefore: Int = 0
@@ -102,6 +107,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     name = binding.edtTaskName.text.toString(),
                     timeCreated = System.currentTimeMillis(),
                     priority = selectedPriority,
+                    dueDate = selectedDate,
                     category = selectedCategory,
                     deadline = selectedTime,
                     remindOptions = RemindOptions(
@@ -117,7 +123,6 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     remindBefore = selectedRemindBefore,
                     description = binding.edtTaskDescription.text.toString()
                 )
-                Log.e("ChienNgan", "New Task= $task")
                 todoListViewModel.insertTask(task)
             }
         }
@@ -332,7 +337,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             else -> {
                 val selectedDate =
                     "${selectedCalendar.get(Calendar.DAY_OF_MONTH)}/${selectedCalendar.get(Calendar.MONTH) + 1}/${
-                    selectedCalendar.get(Calendar.YEAR)
+                        selectedCalendar.get(Calendar.YEAR)
                     }"
                 binding.btnDay.text = selectedDate
             }

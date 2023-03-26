@@ -26,6 +26,7 @@ object TaskMapper {
             timeCreated = it.timeCreated,
             state = it.state,
             priority = it.priority,
+            dueDate = it.dueDate,
             remindOptions = it.remindOptions,
             timeFinished = it.timeFinished,
             deadline = it.deadline,
@@ -47,6 +48,7 @@ object TaskMapper {
             timeCreated = it.timeCreated,
             state = it.state,
             priority = it.priority,
+            dueDate = it.dueDate,
             remindOptions = it.remindOptions
                 ?: RemindOptions(RemindOptions.RemindMode.UN_SPECIFIED),
             timeFinished = it.timeFinished,

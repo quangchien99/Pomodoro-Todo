@@ -3,6 +3,8 @@ package com.chpham.pomodoro_todo.di
 import com.chpham.domain.interactor.DeleteTaskUseCase
 import com.chpham.domain.interactor.GetAllTasksUseCase
 import com.chpham.domain.interactor.GetTaskByIdUseCase
+import com.chpham.domain.interactor.GetTasksByDayUseCase
+import com.chpham.domain.interactor.GetTasksInRangeUseCase
 import com.chpham.domain.interactor.InsertTaskUseCase
 import com.chpham.domain.interactor.SetTaskStateUseCase
 import com.chpham.domain.interactor.UpdateTaskUseCase
@@ -46,6 +48,28 @@ object UseCaseModule {
     fun provideGetTaskByIdUseCase(
         todoListRepository: TodoListRepository
     ) = GetTaskByIdUseCase(todoListRepository)
+
+    /**
+     * Provides an instance of [GetTasksByDayUseCase] scoped to the ViewModel.
+     * @param todoListRepository the [TodoListRepository] instance to be used by the use case.
+     * @return an instance of [GetTasksByDayUseCase].
+     */
+    @Provides
+    @ViewModelScoped
+    fun provideTasksByDayUseCase(
+        todoListRepository: TodoListRepository
+    ) = GetTasksByDayUseCase(todoListRepository)
+
+    /**
+     * Provides an instance of [GetTasksInRangeUseCase] scoped to the ViewModel.
+     * @param todoListRepository the [TodoListRepository] instance to be used by the use case.
+     * @return an instance of [GetTasksInRangeUseCase].
+     */
+    @Provides
+    @ViewModelScoped
+    fun provideTasksInRangeUseCase(
+        todoListRepository: TodoListRepository
+    ) = GetTasksInRangeUseCase(todoListRepository)
 
     /**
      * Provides an instance of [InsertTaskUseCase] scoped to the ViewModel.

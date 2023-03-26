@@ -25,6 +25,18 @@ interface TaskLocalDataSource {
      * Returns a [Flow] emitting a list of all [Task] objects in the local database.
      * @return A [Flow] emitting a list of all [Task] objects in the local database.
      */
+    fun getTasksByDay(dueDate: Long): Flow<List<Task?>>
+
+    /**
+     * Returns a [Flow] emitting a list of all [Task] objects in the local database.
+     * @return A [Flow] emitting a list of all [Task] objects in the local database.
+     */
+    fun getTasksInRange(startDate: Long, endDate: Long): Flow<List<Task?>>
+
+    /**
+     * Returns a [Flow] emitting a list of all [Task] objects in the local database.
+     * @return A [Flow] emitting a list of all [Task] objects in the local database.
+     */
     fun getTasks(): Flow<List<Task?>>
 
     /**

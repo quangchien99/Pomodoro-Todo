@@ -25,14 +25,20 @@ interface TaskDao {
      * @param id The ID of the task to retrieve.
      * @return A [Flow] emitting the [TaskEntity] object matching the provided ID.
      */
-    @Query("SELECT * FROM task WHERE id = :id")
+    @Query("SELECT * FROM tasks WHERE id = :id")
     fun getTask(id: Int): Flow<TaskEntity>
+
+    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate")
+    fun getTasksOfDay(dueDate: Long): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE dueDate BETWEEN :startDate AND :endDate")
+    fun getTasksInRange(startDate: Long, endDate: Long): Flow<List<TaskEntity>>
 
     /**
      * Retrieves a list of all tasks in the local database, ordered by ID in ascending order.
      * @return A [Flow] emitting a list of all [TaskEntity] objects in the local database.
      */
-    @Query("SELECT * FROM task ORDER BY id ASC")
+    @Query("SELECT * FROM tasks ORDER BY id ASC")
     fun getTasks(): Flow<List<TaskEntity>>
 
     /**
@@ -48,14 +54,14 @@ interface TaskDao {
      * @param id The ID of the task to update.
      * @param state The new [TaskState] to set for the task.
      */
-    @Query("UPDATE task SET state = :state WHERE id = :id")
+    @Query("UPDATE tasks SET state = :state WHERE id = :id")
     suspend fun setTaskState(id: Int, state: TaskState)
 
     /**
      * Deletes a task from the local database based on the provided task ID.
      * @param id The ID of the task to delete.
      */
-    @Query("DELETE FROM task WHERE id = :id")
+    @Query("DELETE FROM tasks WHERE id = :id")
     suspend fun deleteTask(id: Int)
 
     /**

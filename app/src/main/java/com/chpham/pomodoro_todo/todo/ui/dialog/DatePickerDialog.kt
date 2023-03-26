@@ -30,7 +30,12 @@ class DatePickerDialog(
     private var repeatOptionsDialog: RepeatOptionsDialog
 
     init {
-        selectedDate = Calendar.getInstance().timeInMillis
+        selectedDate = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
 
         selectedMode = RemindOptions.RemindMode.UN_SPECIFIED
         selectedInterval = null
@@ -92,7 +97,13 @@ class DatePickerDialog(
 
             datePicker.setOnDateChangeListener { _, year, month, dayOfMonth ->
                 val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.set(year, month, dayOfMonth)
+                selectedCalendar.apply {
+                    set(year, month, dayOfMonth)
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
                 selectedDate = selectedCalendar.timeInMillis
             }
 

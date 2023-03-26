@@ -9,17 +9,20 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.base.ui.BaseFragment
+import com.chpham.pomodoro_todo.base.viewmodel.ViewModelState
 import com.chpham.pomodoro_todo.databinding.FragmentTodoBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategoriesAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAndHeadersAdapter
 import com.chpham.pomodoro_todo.todo.ui.dialog.CreateTaskBottomSheetDialogFragment
+import com.chpham.pomodoro_todo.todo.viewmodel.TodoListViewModel
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_DONE
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
@@ -39,6 +42,10 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
     private lateinit var next7DaysTasksAdapter: TasksAdapter
     private lateinit var categoriesAdapter: CategoriesAdapter
 
+    private var bottomSheetDialogFragment: CreateTaskBottomSheetDialogFragment? = null
+
+    private val todoListViewModel: TodoListViewModel by activityViewModels()
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentTodoBinding.inflate(layoutInflater, container, false)
     }
@@ -51,14 +58,21 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         initTodayTasksRecyclerView()
         initNext7DaysTasksRecyclerView()
         initObservers()
+        initData()
         initClickListener()
 
         binding.fabAddTask.setOnClickListener {
-            val bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment()
+            bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment()
             activity?.supportFragmentManager?.let {
-                bottomSheetDialogFragment.show(it, CreateTaskBottomSheetDialogFragment.TAG)
+                bottomSheetDialogFragment?.show(it, CreateTaskBottomSheetDialogFragment.TAG)
             }
         }
+    }
+
+    private fun initData() {
+        todoListViewModel.getYesterdayTasks()
+        todoListViewModel.getTodayTasks()
+        todoListViewModel.getNext7DaysTasks()
     }
 
     private fun initCategoriesRecyclerView() {
@@ -171,51 +185,26 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
     }
 
     private fun initObservers() {
-        val tasks = mutableListOf<Task>()
         val categories = mutableListOf<String>()
 
-        // TODO: dummy data
-        for (i in 0..10) {
-            tasks.add(
-                Task(
-                    id = i,
-                    name = "Kiss DPN $i times",
-                    timeCreated = 1111
-                )
-            )
+        todoListViewModel.state.observe(viewLifecycleOwner) {
+            when (it) {
+                ViewModelState.INSERTING -> {
+                    bottomSheetDialogFragment?.dismiss()
+                    bottomSheetDialogFragment?.onDestroy()
+                }
+                else -> {
+                    //do nothing yet
+                }
+            }
         }
-
-        previousTasksAdapter.differ.submitList(tasks)
-        next7DaysTasksAdapter.differ.submitList(tasks)
-
-        context?.let {
-            tasks.add(
-                Task(
-                    22,
-                    "Coding Pomo Todo Application",
-                    1234,
-                    state = TaskState.DONE
-                )
-            )
-            tasks.add(
-                Task(
-                    23,
-                    "Writing about Clean Architecture",
-                    1234,
-                    state = TaskState.DONE
-                )
-            )
-            tasks.add(
-                Task(
-                    24,
-                    "Fighting WW3",
-                    1234,
-                    state = TaskState.IN_PROGRESS
-                )
-            )
-            val todoTasks = tasks.filter { it.state == TaskState.TO_DO }
-            val inProgressTasks = tasks.filter { it.state == TaskState.IN_PROGRESS }
-            val doneTasks = tasks.filter { it.state == TaskState.DONE }
+        todoListViewModel.yesterdayTasks.observe(viewLifecycleOwner) {
+            previousTasksAdapter.differ.submitList(it)
+        }
+        todoListViewModel.todayTasks.observe(viewLifecycleOwner) { tasks ->
+            val todoTasks = tasks.filter { it?.state == TaskState.TO_DO }
+            val inProgressTasks = tasks.filter { it?.state == TaskState.IN_PROGRESS }
+            val doneTasks = tasks.filter { it?.state == TaskState.DONE }
 
             val tasksAndHeader = mutableListOf<Pair<Task?, String?>>()
             tasksAndHeader.add(Pair(null, HEADER_TODO))
@@ -226,6 +215,9 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
             tasksAndHeader.addAll(doneTasks.map { Pair(it, null) })
 
             todayTasksAdapter.differ.submitList(tasksAndHeader)
+        }
+        todoListViewModel.next7DaysTasks.observe(viewLifecycleOwner) {
+            next7DaysTasksAdapter.differ.submitList(it)
         }
 
         categories.add("All")

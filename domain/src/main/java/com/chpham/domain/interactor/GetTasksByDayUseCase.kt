@@ -27,5 +27,4 @@ class GetTasksByDayUseCase(
     override suspend fun execute(parameter: Long): Flow<List<Task?>> {
         return todoListRepository.getTasksByDay(parameter)
     }
-
 }

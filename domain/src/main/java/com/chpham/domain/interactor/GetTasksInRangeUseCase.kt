@@ -28,5 +28,4 @@ class GetTasksInRangeUseCase(
     override suspend fun execute(parameter: GetTaskInRangeParams): Flow<List<Task?>> {
         return todoListRepository.getTasksInRange(parameter.startDate, parameter.endDate)
     }
-
 }

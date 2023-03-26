@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -337,7 +336,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             else -> {
                 val selectedDate =
                     "${selectedCalendar.get(Calendar.DAY_OF_MONTH)}/${selectedCalendar.get(Calendar.MONTH) + 1}/${
-                        selectedCalendar.get(Calendar.YEAR)
+                    selectedCalendar.get(Calendar.YEAR)
                     }"
                 binding.btnDay.text = selectedDate
             }

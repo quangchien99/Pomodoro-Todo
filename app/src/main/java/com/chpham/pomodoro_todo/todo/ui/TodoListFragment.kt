@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
+import com.chpham.pomodoro_todo.HomeActivity
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.base.ui.BaseFragment
 import com.chpham.pomodoro_todo.base.viewmodel.ViewModelState
@@ -266,6 +267,16 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
             binding.rcvNext7DaysTasks,
             binding.tvFuture
         )
+
+        binding.scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            if (scrollY > oldScrollY) {
+                // User scrolled down
+                (activity as? HomeActivity)?.setFocusStatus(shouldFocusing = true)
+            } else if (scrollY < oldScrollY) {
+                // User scrolled up
+                (activity as? HomeActivity)?.setFocusStatus(shouldFocusing = false)
+            }
+        }
     }
 
     private fun setHeaderClickListener(

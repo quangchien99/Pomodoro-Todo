@@ -15,10 +15,10 @@
         android:textStyle="bold" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_36"
-        android:layout_marginBottom="@dimen/margin_60"
         android:background="@color/white">
 
         <RelativeLayout

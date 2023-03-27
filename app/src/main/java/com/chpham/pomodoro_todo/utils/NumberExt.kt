@@ -1,5 +1,6 @@
 package com.chpham.pomodoro_todo.utils
 
+import android.content.res.Resources
 import java.util.Calendar
 
 /**
@@ -62,3 +63,5 @@ fun Long.toHourMinuteString(): String {
         minute
     ) // format the hour and minute values into a string
 }
+
+fun Int.toPx(): Float = this * Resources.getSystem().displayMetrics.density

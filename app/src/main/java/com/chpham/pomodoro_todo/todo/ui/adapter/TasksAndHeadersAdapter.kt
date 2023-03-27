@@ -18,8 +18,12 @@ import com.chpham.domain.model.TaskState
 import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.databinding.ItemHeaderBinding
 import com.chpham.pomodoro_todo.databinding.ItemTaskBinding
+import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.RightButtonSwipeViewHolder
+import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.SwipeViewHolder
 import com.chpham.pomodoro_todo.utils.Constants
+import com.chpham.pomodoro_todo.utils.dpTtoPx
 import com.chpham.pomodoro_todo.utils.toDayMonthYearString
+import com.chpham.pomodoro_todo.utils.toPx
 
 /**
  * An adapter for a RecyclerView that displays a list of tasks.
@@ -101,14 +105,26 @@ class TasksAndHeadersAdapter(
      * A ViewHolder that holds the views for a task item.
      * @property binding The [ItemTaskBinding] that holds the views for a task item.
      */
-    inner class TaskViewHolder(private val binding: ItemTaskBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class TaskViewHolder(
+        private val binding: ItemTaskBinding,
+        private val swipeViewHolderDelegate: SwipeViewHolder = RightButtonSwipeViewHolder(
+            contentView = binding.itemContent,
+            buttonView = binding.layoutButtons,
+            buttonMargin = binding.root.dpTtoPx(0f),
+            swipeBouncingWidth = 24.toPx()
+        )
+    ) :
+        RecyclerView.ViewHolder(binding.root), SwipeViewHolder by swipeViewHolderDelegate {
+
+        private var lastItemUid: Int? = null
 
         /**
          * Binds the task data to the views.
          * @param task The task to bind to the views.
          */
         fun bind(task: Task) {
+            resetView(animated = task.id == lastItemUid)
+            lastItemUid = task.id
             if (task.state == TaskState.TO_DO || task.state == TaskState.IN_PROGRESS) {
                 binding.imgTaskCheckBox.setOnClickListener {
                     taskClickListener.onTaskDoneClick(task)
@@ -159,6 +175,9 @@ class TasksAndHeadersAdapter(
             binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
             binding.cardViewTask.setOnClickListener {
                 taskClickListener.onTaskClick(task.id, binding.cardViewTask)
+            }
+            binding.swipeDelete.setOnClickListener {
+                taskClickListener.onRemoveTaskClicked(this, task)
             }
         }
     }
@@ -247,5 +266,7 @@ class TasksAndHeadersAdapter(
         fun onTaskClick(taskId: Int, card: CardView)
         fun onTaskDoneClick(task: Task)
         fun onTaskDoingClick(task: Task)
+        fun onRemoveTaskClicked(holder: TaskViewHolder, task: Task)
+        fun onEditTaskClicked(holder: TaskViewHolder, task: Task)
     }
 }

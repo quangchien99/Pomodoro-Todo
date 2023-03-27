@@ -10,98 +10,142 @@
     app:cardBackgroundColor="#D8E8FF"
     app:cardCornerRadius="@dimen/radius_16">
 
-    <TextView
-        android:id="@+id/tvCategory"
-        android:layout_width="@dimen/width_200"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_16"
-        android:drawablePadding="@dimen/padding_8"
-        android:gravity="center_vertical"
-        android:textColor="@color/blue"
-        android:textStyle="italic"
-        android:visibility="gone"
-        app:drawableStartCompat="@drawable/ic_label"
-        tools:text="Study" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/imgTaskCheckBox"
-            android:layout_width="@dimen/width_32"
-            android:layout_height="@dimen/height_32"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="@dimen/margin_16"
-            android:src="@drawable/ic_box_unchecked" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/layoutButtons"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/margin_4">
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/swipeEdit"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/bg_edit_btn"
+                android:padding="@dimen/margin_16"
+                android:src="@drawable/ic_edit"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/swipeDelete"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_delete_btn"
+                android:padding="@dimen/margin_16"
+                android:src="@drawable/ic_delete"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/itemContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="@dimen/width_200"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_16"
+                android:drawablePadding="@dimen/padding_8"
+                android:gravity="center_vertical"
+                android:textColor="@color/blue"
+                android:textStyle="italic"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_label"
+                tools:text="Study" />
 
             <LinearLayout
-                android:id="@+id/layoutNameDescriptionDate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvTaskName"
+                <ImageView
+                    android:id="@+id/imgTaskCheckBox"
+                    android:layout_width="@dimen/width_32"
+                    android:layout_height="@dimen/height_32"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="@dimen/margin_16"
+                    android:src="@drawable/ic_box_unchecked" />
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_32"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_16"
-                    android:textStyle="bold"
-                    tools:text="It's time to go shopping" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/margin_4">
 
-                <TextView
-                    android:id="@+id/tvTaskDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_32"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    tools:text="It's time to go shopping" />
+                    <LinearLayout
+                        android:id="@+id/layoutNameDescriptionDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvTaskDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="03-22" />
+                        <TextView
+                            android:id="@+id/tvTaskName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_32"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_16"
+                            android:textStyle="bold"
+                            tools:text="It's time to go shopping" />
+
+                        <TextView
+                            android:id="@+id/tvTaskDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_32"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            tools:text="It's time to go shopping" />
+
+                        <TextView
+                            android:id="@+id/tvTaskDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="03-22" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgRepeat"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="80dp"
+                        android:src="@drawable/ic_repeat"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imgRemind"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="48dp"
+                        android:src="@drawable/ic_alarm"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imgPriority"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/margin_16"
+                        android:src="@drawable/ic_priority_high"
+                        android:visibility="gone" />
+                </RelativeLayout>
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imgRepeat"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="80dp"
-                android:src="@drawable/ic_repeat"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/imgRemind"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="48dp"
-                android:src="@drawable/ic_alarm"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/imgPriority"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="@dimen/margin_16"
-                android:src="@drawable/ic_priority_high"
-                android:visibility="gone" />
-        </RelativeLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

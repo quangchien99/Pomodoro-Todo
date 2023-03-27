@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.Task
@@ -22,11 +23,13 @@ import com.chpham.pomodoro_todo.databinding.FragmentTodoBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategoriesAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAndHeadersAdapter
+import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.SwipeCallback
 import com.chpham.pomodoro_todo.todo.ui.dialog.CreateTaskBottomSheetDialogFragment
 import com.chpham.pomodoro_todo.todo.viewmodel.TodoListViewModel
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_DONE
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -142,6 +145,32 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 Log.e("ChienNgan", "todayTaskClickListener: onTaskDoingClick")
                 TODO("Not yet implemented")
             }
+
+            override fun onEditTaskClicked(
+                holder: TasksAndHeadersAdapter.TaskViewHolder,
+                task: Task
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onRemoveTaskClicked(
+                holder: TasksAndHeadersAdapter.TaskViewHolder,
+                task: Task
+            ) {
+                context?.let {
+                    MaterialAlertDialogBuilder(it)
+                        .setCancelable(false)
+                        .setTitle("Delete task")
+                        .setMessage("Are you sure profile '${task.name}' will be permanently deleted?")
+                        .setNegativeButton(android.R.string.cancel) { d, _ ->
+                            d.dismiss()
+                            holder.resetView(animated = true)
+                        }.setPositiveButton(android.R.string.ok) { d, _ ->
+                            d.dismiss()
+                            todoListViewModel.deleteTask(task.id)
+                        }.show()
+                }
+            }
         }
         context?.let {
             todayTasksAdapter = TasksAndHeadersAdapter(it, todayTaskClickListener)
@@ -154,6 +183,8 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 startPostponedEnterTransition()
             }
         }
+        ItemTouchHelper(SwipeCallback())
+            .attachToRecyclerView(binding.rcvTodayTasks)
     }
 
     private fun initNext7DaysTasksRecyclerView() {

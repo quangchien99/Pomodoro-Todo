@@ -1,8 +1,11 @@
 package com.chpham.pomodoro_todo.utils
 
+import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.RotateAnimation
 import android.widget.Button
 import androidx.core.content.ContextCompat
@@ -47,3 +50,20 @@ fun Button.changeBackground(isSelected: Boolean) {
         setTextColor(Color.WHITE)
     }
 }
+
+fun View.animateTranslationX(
+    value: Float,
+    animationDuration: Long = 400,
+    animationInterpolator: Interpolator = DecelerateInterpolator()
+): ObjectAnimator? {
+    val view = this@animateTranslationX
+    if (view.translationX == value) return null
+
+    return ObjectAnimator.ofFloat(view, "translationX", value).apply {
+        duration = animationDuration
+        interpolator = animationInterpolator
+        start()
+    }
+}
+
+fun View.dpTtoPx(value: Float): Float = value * context.resources.displayMetrics.density

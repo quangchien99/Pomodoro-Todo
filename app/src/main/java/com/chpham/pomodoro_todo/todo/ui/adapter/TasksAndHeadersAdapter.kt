@@ -127,14 +127,15 @@ class TasksAndHeadersAdapter(
             lastItemUid = task.id
             if (task.state == TaskState.TO_DO || task.state == TaskState.IN_PROGRESS) {
                 binding.imgTaskCheckBox.setOnClickListener {
-                    taskClickListener.onTaskDoneClick(task)
+                    taskClickListener.onTaskDoneClick(task.id)
                 }
                 binding.imgTaskCheckBox.setImageResource(R.drawable.ic_box_unchecked)
                 binding.tvTaskName.text = task.name
             } else {
-                binding.imgTaskCheckBox.setOnClickListener {
-                    taskClickListener.onTaskDoingClick(task)
-                }
+//                binding.imgTaskCheckBox.setOnClickListener {
+//                    taskClickListener.onTaskDoingClick(task)
+//                }
+                binding.imgTaskCheckBox.setImageResource(R.drawable.ic_box_checked)
                 val spannableString = SpannableString(task.name)
                 spannableString.setSpan(
                     StrikethroughSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -173,9 +174,9 @@ class TasksAndHeadersAdapter(
                 binding.imgRemind.visibility = View.VISIBLE
             }
             binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
-            binding.cardViewTask.setOnClickListener {
-                taskClickListener.onTaskClick(task.id, binding.cardViewTask)
-            }
+//            binding.cardViewTask.setOnClickListener {
+//                taskClickListener.onTaskClick(task.id, binding.cardViewTask)
+//            }
             binding.swipeDelete.setOnClickListener {
                 taskClickListener.onRemoveTaskClicked(this, task)
             }
@@ -264,7 +265,7 @@ class TasksAndHeadersAdapter(
      */
     interface TaskClickListener {
         fun onTaskClick(taskId: Int, card: CardView)
-        fun onTaskDoneClick(task: Task)
+        fun onTaskDoneClick(taskId: Int)
         fun onTaskDoingClick(task: Task)
         fun onRemoveTaskClicked(holder: TaskViewHolder, task: Task)
         fun onEditTaskClicked(holder: TaskViewHolder, task: Task)

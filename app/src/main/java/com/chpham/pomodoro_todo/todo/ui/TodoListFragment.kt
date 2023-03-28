@@ -136,9 +136,8 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 TODO("Not yet implemented")
             }
 
-            override fun onTaskDoneClick(task: Task) {
-                Log.e("ChienNgan", "todayTaskClickListener: onTaskDoneClick")
-                TODO("Not yet implemented")
+            override fun onTaskDoneClick(taskId: Int) {
+                todoListViewModel.setTaskState(taskId, TaskState.DONE)
             }
 
             override fun onTaskDoingClick(task: Task) {

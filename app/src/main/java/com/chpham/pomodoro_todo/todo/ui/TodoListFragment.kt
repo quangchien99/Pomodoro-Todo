@@ -55,6 +55,20 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
     private var dialog: AlertDialog? = null
 
+    private var taskIdNeedToMarkDone = -1
+    private val markTaskDone: (Boolean) -> () -> Unit = { isConfirmed ->
+        {
+            taskIdNeedToMarkDone = if (isConfirmed) {
+                if (taskIdNeedToMarkDone != -1) {
+                    todoListViewModel.setTaskState(taskIdNeedToMarkDone, TaskState.DONE)
+                }
+                -1
+            } else {
+                -1
+            }
+        }
+    }
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentTodoBinding.inflate(layoutInflater, container, false)
     }
@@ -205,7 +219,6 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
                 val from = viewHolder.adapterPosition
                 val to = target.adapterPosition
-                Log.e("ChienNgan", "onMove from $from to $to")
 
                 val items = todayTasksAdapter.differ.currentList.toMutableList()
 
@@ -219,14 +232,12 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                     (from in headerInProgressPosition + 1 until headerDonePosition && to in headerInProgressPosition + 1 until headerDonePosition) ||
                     (from > headerDonePosition && to > headerDonePosition)
                 ) {
-                    Log.d("ChienNgan", "Check 1")
                     Collections.swap(items, from, to)
                     todayTasksAdapter.differ.submitList(items)
-                    todayTasksAdapter.notifyItemMoved(from, to)
+                    todayTasksAdapter.notifyItemRangeChanged(from, to)
                     return true
                 } else if (from < headerInProgressPosition && to in headerInProgressPosition until headerDonePosition) {
-                    Log.d("ChienNgan", "Check 2")
-                    todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
+                    todayTasksAdapter.differ.currentList[viewHolder.adapterPosition].first?.id?.let {
                         todoListViewModel.setTaskState(
                             it,
                             TaskState.IN_PROGRESS
@@ -234,8 +245,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                     }
                     return true
                 } else if (from in headerInProgressPosition + 1 until headerDonePosition && to < headerInProgressPosition) {
-                    Log.d("ChienNgan", "Check 3")
-                    todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
+                    todayTasksAdapter.differ.currentList[from].first?.id?.let {
                         todoListViewModel.setTaskState(
                             it,
                             TaskState.TO_DO
@@ -243,35 +253,21 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                     }
                     return true
                 } else if (headerDonePosition in (from + 1)..to) {
-                    Log.d(
-                        "ChienNgan",
-                        "Check 4 ${viewHolder.adapterPosition} to ${target.adapterPosition}"
-                    )
-                    var result = false
+                    taskIdNeedToMarkDone =
+                        todayTasksAdapter.differ.currentList[from].first?.id ?: -1
                     showDialog(
                         title = "Move Item",
                         message = "Are u sure?",
                         positiveAction = {
+                            markTaskDone(true).invoke()
                             dialog?.dismiss()
-                            Log.e("ChienNgan", "From= $from to= $to")
-                            todayTasksAdapter.differ.currentList.forEach {
-                                Log.e("ChienNgan", "currentList: items= ${it.first?.name}")
-                            }
-                            todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
-                                todoListViewModel.setTaskState(
-                                    it,
-                                    TaskState.DONE
-                                )
-                            }
-                            result = true
                         },
                         negativeAction = {
+                            markTaskDone(false).invoke()
                             dialog?.dismiss()
-                            result = false
                         }
                     )
-                    Log.e("ChienNgan", "Return $result")
-                    return true
+                    return false
                 }
                 return true
             }

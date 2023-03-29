@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
@@ -31,6 +33,7 @@ import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Collections
 
 @AndroidEntryPoint
 class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
@@ -50,6 +53,8 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
     private val todoListViewModel: TodoListViewModel by activityViewModels()
 
+    private var dialog: AlertDialog? = null
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentTodoBinding.inflate(layoutInflater, container, false)
     }
@@ -64,7 +69,6 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         initObservers()
         initData()
         initClickListener()
-
         binding.fabAddTask.setOnClickListener {
             bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment()
             activity?.supportFragmentManager?.let {
@@ -184,6 +188,102 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         }
         ItemTouchHelper(SwipeCallback())
             .attachToRecyclerView(binding.rcvTodayTasks)
+        setUpDragAction()
+    }
+
+    private fun setUpDragAction() {
+        val dragHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                viewHolder.itemView.elevation = 16F
+
+                val from = viewHolder.adapterPosition
+                val to = target.adapterPosition
+                Log.e("ChienNgan", "onMove from $from to $to")
+
+                val items = todayTasksAdapter.differ.currentList.toMutableList()
+
+                val headerTodoPosition = items.indexOfFirst { it.second == HEADER_TODO }
+                val headerInProgressPosition =
+                    items.indexOfFirst { it.second == HEADER_IN_PROGRESS }
+                val headerDonePosition = items.indexOfFirst { it.second == HEADER_DONE }
+
+                if (
+                    (from in headerTodoPosition + 1 until headerInProgressPosition && to in headerTodoPosition + 1 until headerInProgressPosition) ||
+                    (from in headerInProgressPosition + 1 until headerDonePosition && to in headerInProgressPosition + 1 until headerDonePosition) ||
+                    (from > headerDonePosition && to > headerDonePosition)
+                ) {
+                    Log.d("ChienNgan", "Check 1")
+                    Collections.swap(items, from, to)
+                    todayTasksAdapter.differ.submitList(items)
+                    todayTasksAdapter.notifyItemMoved(from, to)
+                    return true
+                } else if (from < headerInProgressPosition && to in headerInProgressPosition until headerDonePosition) {
+                    Log.d("ChienNgan", "Check 2")
+                    todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
+                        todoListViewModel.setTaskState(
+                            it,
+                            TaskState.IN_PROGRESS
+                        )
+                    }
+                    return true
+                } else if (from in headerInProgressPosition + 1 until headerDonePosition && to < headerInProgressPosition) {
+                    Log.d("ChienNgan", "Check 3")
+                    todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
+                        todoListViewModel.setTaskState(
+                            it,
+                            TaskState.TO_DO
+                        )
+                    }
+                    return true
+                } else if (headerDonePosition in (from + 1)..to) {
+                    Log.d(
+                        "ChienNgan",
+                        "Check 4 ${viewHolder.adapterPosition} to ${target.adapterPosition}"
+                    )
+                    var result = false
+                    showDialog(
+                        title = "Move Item",
+                        message = "Are u sure?",
+                        positiveAction = {
+                            dialog?.dismiss()
+                            Log.e("ChienNgan", "From= $from to= $to")
+                            todayTasksAdapter.differ.currentList.forEach {
+                                Log.e("ChienNgan", "currentList: items= ${it.first?.name}")
+                            }
+                            todayTasksAdapter.differ.currentList.get(viewHolder.adapterPosition).first?.id?.let {
+                                todoListViewModel.setTaskState(
+                                    it,
+                                    TaskState.DONE
+                                )
+                            }
+                            result = true
+                        },
+                        negativeAction = {
+                            dialog?.dismiss()
+                            result = false
+                        }
+                    )
+                    Log.e("ChienNgan", "Return $result")
+                    return true
+                }
+                return true
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                viewHolder?.itemView?.elevation = 0F
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+        })
+        dragHelper.attachToRecyclerView(binding.rcvTodayTasks)
     }
 
     private fun initNext7DaysTasksRecyclerView() {
@@ -323,5 +423,28 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
             }
             textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
         }
+    }
+
+    fun showDialog(
+        title: String,
+        message: String,
+        positiveAction: () -> Unit,
+        negativeAction: () -> Unit
+    ) {
+        if (dialog == null) {
+            dialog = AlertDialog.Builder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK") { _, _ -> positiveAction.invoke() }
+                .setNegativeButton("Cancel") { _, _ -> negativeAction.invoke() }
+                .create()
+        }
+        dialog?.show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        dialog?.dismiss()
+        dialog = null
     }
 }

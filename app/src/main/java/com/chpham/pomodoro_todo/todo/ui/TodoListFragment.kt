@@ -76,8 +76,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
             taskIdNeedToMarkInProgress = if (isConfirmed) {
                 if (taskIdNeedToMarkInProgress != -1) {
                     todoListViewModel.setTaskState(
-                        taskIdNeedToMarkInProgress,
-                        TaskState.IN_PROGRESS
+                        taskIdNeedToMarkInProgress, TaskState.IN_PROGRESS
                     )
                 }
                 -1
@@ -194,13 +193,10 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 task: Task
             ) {
                 context?.let {
-                    MaterialAlertDialogBuilder(it)
-                        .setCancelable(false)
-                        .setTitle("Delete task")
+                    MaterialAlertDialogBuilder(it).setCancelable(false).setTitle("Delete task")
                         .setMessage(
                             "Are you sure profile '${task.name}' will be permanently deleted?"
-                        )
-                        .setNegativeButton(android.R.string.cancel) { d, _ ->
+                        ).setNegativeButton(android.R.string.cancel) { d, _ ->
                             d.dismiss()
                             holder.resetView(animated = true)
                         }.setPositiveButton(android.R.string.ok) { d, _ ->
@@ -221,8 +217,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 startPostponedEnterTransition()
             }
         }
-        ItemTouchHelper(SwipeCallback())
-            .attachToRecyclerView(binding.rcvTodayTasks)
+        ItemTouchHelper(SwipeCallback()).attachToRecyclerView(binding.rcvTodayTasks)
         setUpDragAction()
     }
 
@@ -260,33 +255,19 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 val headerInProgressPosition =
                     items.indexOfFirst { it.second == HEADER_IN_PROGRESS }
                 val headerDonePosition = items.indexOfFirst { it.second == HEADER_DONE }
-                if ((
-                            from in headerTodoPosition + 1 until headerInProgressPosition &&
-                                    to in headerTodoPosition + 1 until headerInProgressPosition
-                            ) ||
-                    (
-                            from in headerInProgressPosition + 1 until headerDonePosition &&
-                                    to in headerInProgressPosition + 1 until headerDonePosition
-                            ) ||
-                    (from > headerDonePosition && to > headerDonePosition)
-                ) {
+                if ((from in headerTodoPosition + 1 until headerInProgressPosition && to in headerTodoPosition + 1 until headerInProgressPosition) || (from in headerInProgressPosition + 1 until headerDonePosition && to in headerInProgressPosition + 1 until headerDonePosition) || (from > headerDonePosition && to > headerDonePosition)) {
                     Collections.swap(items, from, to)
                     todayTasksAdapter.differ.submitList(items)
                     todayTasksAdapter.notifyItemRangeChanged(from, to)
                     return true
-                } else if (from < headerInProgressPosition &&
-                    to in headerInProgressPosition until headerDonePosition
-                ) {
-                    todayTasksAdapter.differ.currentList[viewHolder.adapterPosition]
-                        .first?.id?.let {
-                            todoListViewModel.setTaskState(
-                                it, TaskState.IN_PROGRESS
-                            )
-                        }
+                } else if (from < headerInProgressPosition && to in headerInProgressPosition until headerDonePosition) {
+                    todayTasksAdapter.differ.currentList[viewHolder.adapterPosition].first?.id?.let {
+                        todoListViewModel.setTaskState(
+                            it, TaskState.IN_PROGRESS
+                        )
+                    }
                     return true
-                } else if (from in headerInProgressPosition + 1 until headerDonePosition &&
-                    to <= headerInProgressPosition
-                ) {
+                } else if (from in headerInProgressPosition + 1 until headerDonePosition && to <= headerInProgressPosition) {
                     todayTasksAdapter.differ.currentList[from].first?.id?.let {
                         todoListViewModel.setTaskState(
                             it, TaskState.TO_DO
@@ -309,9 +290,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                         }
                     )
                     return true
-                } else if (from > headerDonePosition &&
-                    to in (headerTodoPosition + 1)..headerDonePosition
-                ) {
+                } else if (from > headerDonePosition && to in (headerTodoPosition + 1)..headerDonePosition) {
                     taskIdNeedToMarkInProgress =
                         todayTasksAdapter.differ.currentList[from].first?.id ?: -1
                     showDialog(
@@ -436,21 +415,15 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
     private fun initClickListener() {
         setHeaderClickListener(
-            binding.layoutHeaderPrevious,
-            binding.rcvPreviousTasks,
-            binding.tvPrevious
+            binding.layoutHeaderPrevious, binding.rcvPreviousTasks, binding.tvPrevious
         )
 
         setHeaderClickListener(
-            binding.layoutHeaderToday,
-            binding.rcvTodayTasks,
-            binding.tvToday
+            binding.layoutHeaderToday, binding.rcvTodayTasks, binding.tvToday
         )
 
         setHeaderClickListener(
-            binding.layoutHeaderFuture,
-            binding.rcvNext7DaysTasks,
-            binding.tvFuture
+            binding.layoutHeaderFuture, binding.rcvNext7DaysTasks, binding.tvFuture
         )
 
         binding.scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
@@ -480,19 +453,16 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         }
     }
 
-    fun showDialog(
+    private fun showDialog(
         title: String,
         message: String,
         positiveAction: () -> Unit,
         negativeAction: () -> Unit
     ) {
         if (dialog == null) {
-            dialog = AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
+            dialog = AlertDialog.Builder(requireContext()).setTitle(title).setMessage(message)
                 .setPositiveButton("OK") { _, _ -> positiveAction.invoke() }
-                .setNegativeButton("Cancel") { _, _ -> negativeAction.invoke() }
-                .create()
+                .setNegativeButton("Cancel") { _, _ -> negativeAction.invoke() }.create()
         }
         dialog?.show()
     }

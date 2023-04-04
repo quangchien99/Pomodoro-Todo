@@ -138,9 +138,11 @@ class TasksAndHeadersAdapter(
                 )
                 binding.tvTaskName.text = spannableString
             }
-            task.category?.let {
-                binding.tvCategory.text = it
+            if (!task.category.isNullOrEmpty()) {
+                binding.tvCategory.text = task.category
                 binding.tvCategory.visibility = View.VISIBLE
+            } else {
+                binding.tvCategory.visibility = View.GONE
             }
             if (task.remindOptions?.mode != RemindOptions.RemindMode.UN_SPECIFIED) {
                 binding.imgRepeat.visibility = View.VISIBLE
@@ -148,6 +150,8 @@ class TasksAndHeadersAdapter(
             if (!task.description.isNullOrEmpty()) {
                 binding.tvTaskDescription.text = task.description
                 binding.tvTaskDescription.visibility = View.VISIBLE
+            } else {
+                binding.tvTaskDescription.visibility = View.GONE
             }
             when (task.priority) {
                 TaskPriority.LOW -> {
@@ -163,11 +167,13 @@ class TasksAndHeadersAdapter(
                     binding.imgPriority.visibility = View.VISIBLE
                 }
                 else -> {
-                    // do nothing
+                    binding.imgPriority.visibility = View.GONE
                 }
             }
             if (task.remindBefore != 0 && task.deadline != 0L) {
                 binding.imgRemind.visibility = View.VISIBLE
+            } else {
+                binding.imgRemind.visibility = View.GONE
             }
             binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
             binding.swipeDelete.setOnClickListener {

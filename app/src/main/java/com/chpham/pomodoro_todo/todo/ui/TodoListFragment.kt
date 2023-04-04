@@ -300,10 +300,6 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 return true
             }
 
-            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-            }
-
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
         })
         dragHelper.attachToRecyclerView(binding.rcvTodayTasks)

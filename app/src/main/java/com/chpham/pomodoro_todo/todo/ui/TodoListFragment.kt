@@ -207,8 +207,8 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 startPostponedEnterTransition()
             }
         }
-        ItemTouchHelper(SwipeCallback()).attachToRecyclerView(binding.rcvTodayTasks)
         setUpDragAction()
+        ItemTouchHelper(SwipeCallback()).attachToRecyclerView(binding.rcvTodayTasks)
     }
 
     private fun setUpDragAction() {

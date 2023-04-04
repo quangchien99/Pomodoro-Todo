@@ -167,18 +167,8 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
     private fun initTodayTasksRecyclerView() {
         val todayTaskClickListener = object : TasksAndHeadersAdapter.TaskClickListener {
-            override fun onTaskClick(taskId: Int, card: CardView) {
-                Log.e("ChienNgan", "todayTaskClickListener: onTaskClick")
-                TODO("Not yet implemented")
-            }
-
             override fun onTaskDoneClick(taskId: Int) {
                 todoListViewModel.setTaskState(taskId, TaskState.DONE)
-            }
-
-            override fun onTaskDoingClick(task: Task) {
-                Log.e("ChienNgan", "todayTaskClickListener: onTaskDoingClick")
-                TODO("Not yet implemented")
             }
 
             override fun onEditTaskClicked(

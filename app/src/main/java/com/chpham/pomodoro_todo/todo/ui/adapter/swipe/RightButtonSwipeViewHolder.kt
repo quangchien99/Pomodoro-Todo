@@ -1,9 +1,12 @@
 package com.chpham.pomodoro_todo.todo.ui.adapter.swipe
 
 import android.animation.ObjectAnimator
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.isVisible
+import com.chpham.pomodoro_todo.R
 import com.chpham.pomodoro_todo.utils.animateTranslationX
 import com.chpham.pomodoro_todo.utils.toPx
 import kotlin.math.abs
@@ -65,6 +68,9 @@ open class RightButtonSwipeViewHolder(
     }
 
     override fun onSwipeComplete() {
+        buttonView.findViewById<ImageView>(R.id.swipeDelete).setOnClickListener {
+            Log.e("ChienNgan", "swipeDelete check")
+        }
         val minOffset = buttonSwipeLimit
 
         // autoscroll if reached 30% of min offset

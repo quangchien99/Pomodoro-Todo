@@ -7,7 +7,6 @@ import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -132,9 +131,6 @@ class TasksAndHeadersAdapter(
                 binding.imgTaskCheckBox.setImageResource(R.drawable.ic_box_unchecked)
                 binding.tvTaskName.text = task.name
             } else {
-//                binding.imgTaskCheckBox.setOnClickListener {
-//                    taskClickListener.onTaskDoingClick(task)
-//                }
                 binding.imgTaskCheckBox.setImageResource(R.drawable.ic_box_checked)
                 val spannableString = SpannableString(task.name)
                 spannableString.setSpan(
@@ -174,9 +170,6 @@ class TasksAndHeadersAdapter(
                 binding.imgRemind.visibility = View.VISIBLE
             }
             binding.tvTaskDate.text = task.dueDate.toDayMonthYearString()
-//            binding.cardViewTask.setOnClickListener {
-//                taskClickListener.onTaskClick(task.id, binding.cardViewTask)
-//            }
             binding.swipeDelete.setOnClickListener {
                 taskClickListener.onRemoveTaskClicked(this, task)
             }
@@ -200,7 +193,7 @@ class TasksAndHeadersAdapter(
                 Constants.HEADER_IN_PROGRESS -> {
                     binding.cardViewItemHeader.setCardBackgroundColor(
                         context.resources.getColor(
-                            com.chpham.domain.R.color.greenLight,
+                            com.chpham.domain.R.color.greenDark,
                             null
                         )
                     )
@@ -264,9 +257,7 @@ class TasksAndHeadersAdapter(
      * The listener for click events on the tasks.
      */
     interface TaskClickListener {
-        fun onTaskClick(taskId: Int, card: CardView)
         fun onTaskDoneClick(taskId: Int)
-        fun onTaskDoingClick(task: Task)
         fun onRemoveTaskClicked(holder: TaskViewHolder, task: Task)
         fun onEditTaskClicked(holder: TaskViewHolder, task: Task)
     }

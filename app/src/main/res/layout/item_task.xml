@@ -7,8 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/height_80"
     android:layout_margin="@dimen/margin_8"
-    app:cardBackgroundColor="#D8E8FF"
-    app:cardCornerRadius="@dimen/radius_16">
+    android:elevation="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/radius_16"
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -51,18 +53,6 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="@dimen/width_200"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_16"
-                android:drawablePadding="@dimen/padding_8"
-                android:gravity="center_vertical"
-                android:textColor="@color/blue"
-                android:textStyle="italic"
-                android:visibility="gone"
-                app:drawableStartCompat="@drawable/ic_label"
-                tools:text="Study" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,11 +79,12 @@
                         android:id="@+id/layoutNameDescriptionDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tvTaskName"
-                            android:layout_width="match_parent"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/margin_32"
                             android:textColor="@color/black"
@@ -111,11 +102,30 @@
                             android:visibility="gone"
                             tools:text="It's time to go shopping" />
 
-                        <TextView
-                            android:id="@+id/tvTaskDate"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            tools:text="03-22" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvTaskDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="03-22" />
+
+                            <TextView
+                                android:id="@+id/tvCategory"
+                                android:layout_width="180dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_16"
+                                android:drawablePadding="@dimen/padding_8"
+                                android:gravity="center_vertical"
+                                android:textColor="@color/blue"
+                                android:textStyle="italic"
+                                android:visibility="gone"
+                                app:drawableStartCompat="@drawable/ic_label"
+                                tools:text="Study" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <ImageView
@@ -123,7 +133,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="80dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="72dp"
                         android:src="@drawable/ic_repeat"
                         android:visibility="gone" />
 
@@ -132,7 +143,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="48dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="40dp"
                         android:src="@drawable/ic_alarm"
                         android:visibility="gone" />
 
@@ -141,7 +153,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="@dimen/margin_16"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/margin_8"
                         android:src="@drawable/ic_priority_high"
                         android:visibility="gone" />
                 </RelativeLayout>

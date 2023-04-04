@@ -302,7 +302,6 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
 
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
-                viewHolder?.itemView?.elevation = 0F
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit

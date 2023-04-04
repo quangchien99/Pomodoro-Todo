@@ -9,7 +9,6 @@ import com.chpham.pomodoro_todo.adapter.ViewPagerAdapter
 import com.chpham.pomodoro_todo.base.ui.BaseActivity
 import com.chpham.pomodoro_todo.databinding.ActivityHomeBinding
 import com.chpham.pomodoro_todo.pomodoro.ui.PomodoroFragment
-import com.chpham.pomodoro_todo.settings.ui.SettingsFragment
 import com.chpham.pomodoro_todo.todo.ui.TodoListFragment
 import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +19,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     companion object {
         private const val FRAGMENT_POMODORO_INDEX = 0
         private const val FRAGMENT_TODO_INDEX = 1
-        private const val FRAGMENT_SETTINGS_INDEX = 2
         private const val SLIDE_ANIMATION_DURATION = 500L
     }
 
@@ -39,10 +37,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             }
             R.id.itemTodoList -> {
                 binding.viewPager.currentItem = FRAGMENT_TODO_INDEX
-                return@OnItemSelectedListener true
-            }
-            R.id.itemSettings -> {
-                binding.viewPager.currentItem = FRAGMENT_SETTINGS_INDEX
                 return@OnItemSelectedListener true
             }
         }
@@ -71,7 +65,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
         val viewPagerAdapter = ViewPagerAdapter(this)
         viewPagerAdapter.addFragment(PomodoroFragment.newInstance())
         viewPagerAdapter.addFragment(TodoListFragment.newInstance())
-        viewPagerAdapter.addFragment(SettingsFragment.newInstance())
         viewPager.apply {
             adapter = viewPagerAdapter
         }
@@ -83,9 +76,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             override fun onPageSelected(position: Int) {
 
                 /**
-                 * Show the bottomNavigation when moving to fragment to do or settings
+                 * Show the bottomNavigation when moving to fragment to do
                  */
-                if ((position == FRAGMENT_TODO_INDEX || position == FRAGMENT_SETTINGS_INDEX) &&
+                if ((position == FRAGMENT_TODO_INDEX) &&
                     isFocusingOn
                 ) {
                     setFocusStatus(false)

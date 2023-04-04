@@ -14,9 +14,4 @@
         android:id="@+id/itemTodoList"
         android:icon="@drawable/ic_todo_list"
         android:title="@string/text_todo" />
-
-    <item
-        android:id="@+id/itemSettings"
-        android:icon="@drawable/ic_settings"
-        android:title="@string/text_settings" />
 </menu>

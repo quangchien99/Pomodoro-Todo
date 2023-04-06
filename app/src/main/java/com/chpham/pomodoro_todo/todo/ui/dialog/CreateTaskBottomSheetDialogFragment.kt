@@ -2,7 +2,6 @@ package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -38,6 +37,9 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var layoutTimePickerBinding: LayoutTimePickerBinding
     private lateinit var layoutRepeatOptionsBinding: LayoutRepeatOptionsBinding
 
+    private var isCreate: Boolean = true
+    private var taskId: Int = -1
+
     private var selectedDate: Long = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
@@ -63,6 +65,21 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "CreateTaskBottomSheetDialogFragment"
+        private const val ARG_IS_CREATE = "is_create"
+        private const val ARG_TASK_ID = "task_id"
+        fun newInstance(
+            isCreate: Boolean = true,
+            taskId: Int = -1
+        ): CreateTaskBottomSheetDialogFragment {
+            val args = Bundle()
+            args.putBoolean(ARG_IS_CREATE, isCreate)
+            if (!isCreate) {
+                args.putInt(ARG_TASK_ID, taskId)
+            }
+            val fragment = CreateTaskBottomSheetDialogFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +103,14 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        isCreate = arguments?.getBoolean(ARG_IS_CREATE) == true
+        if (isCreate) {
+            binding.tvHeader.text = getString(R.string.text_add_task)
+        } else {
+            binding.tvHeader.text = getString(R.string.text_edit_task)
+            taskId = arguments?.getString(ARG_TASK_ID)?.toInt() ?: -1
+        }
 
         setUpDateAndRepetition()
 
@@ -345,9 +370,5 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 binding.btnDay.text = selectedDate
             }
         }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
     }
 }

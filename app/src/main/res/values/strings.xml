@@ -31,6 +31,7 @@
     <string name="text_tomorrow">Tomorrow</string>
     <string name="text_next_7_days">Next 7 days</string>
     <string name="text_add_task">Add Task</string>
+    <string name="text_edit_task">Edit Task</string>
     <string name="text_category">Category</string>
     <string name="text_reminder">Reminder</string>
     <string name="text_priority">Priority</string>

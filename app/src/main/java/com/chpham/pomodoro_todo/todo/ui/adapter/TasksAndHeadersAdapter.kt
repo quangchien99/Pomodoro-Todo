@@ -179,6 +179,9 @@ class TasksAndHeadersAdapter(
             binding.swipeDelete.setOnClickListener {
                 taskClickListener.onRemoveTaskClicked(this, task)
             }
+            binding.swipeEdit.setOnClickListener {
+                taskClickListener.onEditTaskClicked(this, task)
+            }
         }
     }
 

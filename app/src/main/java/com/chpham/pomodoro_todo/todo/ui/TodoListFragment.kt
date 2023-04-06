@@ -102,7 +102,9 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         initData()
         initClickListener()
         binding.fabAddTask.setOnClickListener {
-            bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment()
+            bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment.newInstance(
+                isCreate = true
+            )
             activity?.supportFragmentManager?.let {
                 bottomSheetDialogFragment?.show(it, CreateTaskBottomSheetDialogFragment.TAG)
             }
@@ -175,7 +177,17 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 holder: TasksAndHeadersAdapter.TaskViewHolder,
                 task: Task
             ) {
-                TODO("Not yet implemented")
+                Log.e("ChienNgan", "onEditTaskClicked")
+                val bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment.newInstance(
+                    isCreate = false,
+                    taskId = task.id
+                )
+                activity?.supportFragmentManager?.let {
+                    bottomSheetDialogFragment.show(
+                        it,
+                        CreateTaskBottomSheetDialogFragment.TAG
+                    )
+                }
             }
 
             override fun onRemoveTaskClicked(

@@ -13,7 +13,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
@@ -25,7 +24,7 @@ import com.chpham.pomodoro_todo.databinding.FragmentTodoBinding
 import com.chpham.pomodoro_todo.todo.ui.adapter.CategoriesAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAndHeadersAdapter
-import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.SwipeCallback
+import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.DragAndSwipeCallback
 import com.chpham.pomodoro_todo.todo.ui.dialog.CreateTaskBottomSheetDialogFragment
 import com.chpham.pomodoro_todo.todo.viewmodel.TodoListViewModel
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_DONE
@@ -36,7 +35,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Collections
 
 @AndroidEntryPoint
-class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
+class TodoListFragment :
+    BaseFragment<FragmentTodoBinding>(),
+    DragAndSwipeCallback.ItemTouchHelperListener {
 
     companion object {
         fun newInstance(): TodoListFragment {
@@ -219,102 +220,7 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
                 startPostponedEnterTransition()
             }
         }
-        setUpDragAction()
-        ItemTouchHelper(SwipeCallback()).attachToRecyclerView(binding.rcvTodayTasks)
-    }
-
-    private fun setUpDragAction() {
-        val dragHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-                val swipeFlags = 0 // Disable swipe operation for all items
-
-                // Check if the current item is undraggable
-                return if (viewHolder is TasksAndHeadersAdapter.HeaderViewHolder) {
-                    makeMovementFlags(0, swipeFlags)
-                } else {
-                    makeMovementFlags(dragFlags, swipeFlags)
-                }
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                viewHolder.itemView.elevation = 16F
-
-                val from = viewHolder.adapterPosition
-                val to = target.adapterPosition
-
-                val items = todayTasksAdapter.differ.currentList.toMutableList()
-
-                val headerTodoPosition = items.indexOfFirst { it.second == HEADER_TODO }
-                val headerInProgressPosition =
-                    items.indexOfFirst { it.second == HEADER_IN_PROGRESS }
-                val headerDonePosition = items.indexOfFirst { it.second == HEADER_DONE }
-                if ((from in headerTodoPosition + 1 until headerInProgressPosition && to in headerTodoPosition + 1 until headerInProgressPosition) || (from in headerInProgressPosition + 1 until headerDonePosition && to in headerInProgressPosition + 1 until headerDonePosition) || (from > headerDonePosition && to > headerDonePosition)) {
-                    Collections.swap(items, from, to)
-                    todayTasksAdapter.differ.submitList(items)
-                    todayTasksAdapter.notifyItemRangeChanged(from, to)
-                    return true
-                } else if (from < headerInProgressPosition && to in headerInProgressPosition until headerDonePosition) {
-                    todayTasksAdapter.differ.currentList[viewHolder.adapterPosition].first?.id?.let {
-                        todoListViewModel.setTaskState(
-                            it, TaskState.IN_PROGRESS
-                        )
-                    }
-                    return true
-                } else if (from in headerInProgressPosition + 1 until headerDonePosition && to <= headerInProgressPosition) {
-                    todayTasksAdapter.differ.currentList[from].first?.id?.let {
-                        todoListViewModel.setTaskState(
-                            it, TaskState.TO_DO
-                        )
-                    }
-                    return true
-                } else if (headerDonePosition in (from + 1)..to) {
-                    taskIdNeedToMarkDone =
-                        todayTasksAdapter.differ.currentList[from].first?.id ?: -1
-                    showDialog(
-                        title = "Mark Task Done",
-                        message = "Are u sure to make it completed?",
-                        positiveAction = {
-                            markTaskDone(true).invoke()
-                            dialog?.dismiss()
-                        },
-                        negativeAction = {
-                            markTaskDone(false).invoke()
-                            dialog?.dismiss()
-                        }
-                    )
-                    return true
-                } else if (from > headerDonePosition && to in (headerTodoPosition + 1)..headerDonePosition) {
-                    taskIdNeedToMarkInProgress =
-                        todayTasksAdapter.differ.currentList[from].first?.id ?: -1
-                    showDialog(
-                        title = "Mark Task In Progress",
-                        message = "Do you want to change this task to In Progress?",
-                        positiveAction = {
-                            markTaskInProgress(true).invoke()
-                            dialog?.dismiss()
-                        },
-                        negativeAction = {
-                            markTaskInProgress(false).invoke()
-                            dialog?.dismiss()
-                        }
-                    )
-                    return true
-                }
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
-        })
-        dragHelper.attachToRecyclerView(binding.rcvTodayTasks)
+        ItemTouchHelper(DragAndSwipeCallback(this)).attachToRecyclerView(binding.rcvTodayTasks)
     }
 
     private fun initNext7DaysTasksRecyclerView() {
@@ -468,5 +374,67 @@ class TodoListFragment : BaseFragment<FragmentTodoBinding>() {
         super.onDestroyView()
         dialog?.dismiss()
         dialog = null
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        val items = todayTasksAdapter.differ.currentList.toMutableList()
+
+        val headerTodoPosition = items.indexOfFirst { it.second == HEADER_TODO }
+        val headerInProgressPosition =
+            items.indexOfFirst { it.second == HEADER_IN_PROGRESS }
+        val headerDonePosition = items.indexOfFirst { it.second == HEADER_DONE }
+        if ((fromPosition in headerTodoPosition + 1 until headerInProgressPosition && toPosition in headerTodoPosition + 1 until headerInProgressPosition) || (fromPosition in headerInProgressPosition + 1 until headerDonePosition && toPosition in headerInProgressPosition + 1 until headerDonePosition) || (fromPosition > headerDonePosition && toPosition > headerDonePosition)) {
+            Collections.swap(items, fromPosition, toPosition)
+            todayTasksAdapter.differ.submitList(items)
+            todayTasksAdapter.notifyItemRangeChanged(fromPosition, toPosition)
+            return true
+        } else if (fromPosition < headerInProgressPosition && toPosition in headerInProgressPosition until headerDonePosition) {
+            todayTasksAdapter.differ.currentList[fromPosition].first?.id?.let {
+                todoListViewModel.setTaskState(
+                    it, TaskState.IN_PROGRESS
+                )
+            }
+            return true
+        } else if (fromPosition in headerInProgressPosition + 1 until headerDonePosition && toPosition <= headerInProgressPosition) {
+            todayTasksAdapter.differ.currentList[fromPosition].first?.id?.let {
+                todoListViewModel.setTaskState(
+                    it, TaskState.TO_DO
+                )
+            }
+            return true
+        } else if (headerDonePosition in (fromPosition + 1)..toPosition) {
+            taskIdNeedToMarkDone =
+                todayTasksAdapter.differ.currentList[fromPosition].first?.id ?: -1
+            showDialog(
+                title = "Mark Task Done",
+                message = "Are u sure to make it completed?",
+                positiveAction = {
+                    markTaskDone(true).invoke()
+                    dialog?.dismiss()
+                },
+                negativeAction = {
+                    markTaskDone(false).invoke()
+                    dialog?.dismiss()
+                }
+            )
+            return true
+        } else if (fromPosition > headerDonePosition && toPosition in (headerTodoPosition + 1)..headerDonePosition) {
+            taskIdNeedToMarkInProgress =
+                todayTasksAdapter.differ.currentList[fromPosition].first?.id ?: -1
+            showDialog(
+                title = "Mark Task In Progress",
+                message = "Do you want to change this task to In Progress?",
+                positiveAction = {
+                    markTaskInProgress(true).invoke()
+                    dialog?.dismiss()
+                },
+                negativeAction = {
+                    markTaskInProgress(false).invoke()
+                    dialog?.dismiss()
+                }
+            )
+            return true
+        }
+        return true
     }
 }

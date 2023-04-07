@@ -4,12 +4,18 @@ import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class SwipeCallback : ItemTouchHelper.SimpleCallback(
-    ItemTouchHelper.ACTION_STATE_IDLE,
+class DragAndSwipeCallback(
+    private val listener: ItemTouchHelperListener
+) : ItemTouchHelper.SimpleCallback(
+    ItemTouchHelper.UP or ItemTouchHelper.DOWN,
     ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
 ) {
 
     private var activeHolder: SwipeViewHolder? = null
+
+    interface ItemTouchHelperListener {
+        fun onItemMove(fromPosition: Int, toPosition: Int): Boolean
+    }
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
@@ -25,7 +31,8 @@ class SwipeCallback : ItemTouchHelper.SimpleCallback(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        return true
+        viewHolder.itemView.elevation = 16F
+        return listener.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
@@ -47,18 +54,22 @@ class SwipeCallback : ItemTouchHelper.SimpleCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        // onSwipe allowed only for active ACTION_STATE_SWIPE
-        if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE || !isCurrentlyActive) return
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            // onSwipe allowed only for active ACTION_STATE_SWIPE
+            if (!isCurrentlyActive) return
 
-        // onSwipe allowed only for SwipeViewHolder
-        if (viewHolder !is SwipeViewHolder) return
+            // onSwipe allowed only for SwipeViewHolder
+            if (viewHolder !is SwipeViewHolder) return
 
-        if (viewHolder != activeHolder) {
-            activeHolder?.resetView(animated = true)
-            activeHolder = viewHolder
+            if (viewHolder != activeHolder) {
+                activeHolder?.resetView(animated = true)
+                activeHolder = viewHolder
+            }
+
+            viewHolder.onSwipe(dX)
+        } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
-
-        viewHolder.onSwipe(dX)
     }
 
     override fun clearView(

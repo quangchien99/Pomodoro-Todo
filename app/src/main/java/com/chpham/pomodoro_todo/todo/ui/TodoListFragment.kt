@@ -32,7 +32,7 @@ import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Collections
 
 @AndroidEntryPoint
 class TodoListFragment :

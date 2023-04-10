@@ -30,7 +30,7 @@ import com.chpham.pomodoro_todo.utils.getDay
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Calendar
 
-class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
+class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetFragementAddTaskBinding
     private lateinit var layoutDatePickerBinding: LayoutDatePickerBinding
@@ -39,6 +39,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     private var isCreate: Boolean = true
     private var taskId: Int = -1
+    private var task: Task? = null
 
     private var selectedDate: Long = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
@@ -70,13 +71,13 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         fun newInstance(
             isCreate: Boolean = true,
             taskId: Int = -1
-        ): CreateTaskBottomSheetDialogFragment {
+        ): CreateOrEditTaskBottomSheetDialogFragment {
             val args = Bundle()
             args.putBoolean(ARG_IS_CREATE, isCreate)
             if (!isCreate) {
                 args.putInt(ARG_TASK_ID, taskId)
             }
-            val fragment = CreateTaskBottomSheetDialogFragment()
+            val fragment = CreateOrEditTaskBottomSheetDialogFragment()
             fragment.arguments = args
             return fragment
         }
@@ -107,18 +108,14 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         isCreate = arguments?.getBoolean(ARG_IS_CREATE) == true
         if (isCreate) {
             binding.tvHeader.text = getString(R.string.text_add_task)
+            initViews()
         } else {
             binding.tvHeader.text = getString(R.string.text_edit_task)
-            taskId = arguments?.getString(ARG_TASK_ID)?.toInt() ?: -1
+            taskId = arguments?.getInt(ARG_TASK_ID) ?: -1
+            todoListViewModel.getTaskById(taskId).observe(viewLifecycleOwner) {
+                handleDataEdit(it)
+            }
         }
-
-        setUpDateAndRepetition()
-
-        setUpCategory()
-
-        setUpPriority()
-
-        setUpReminder()
 
         binding.edtTaskName.doOnTextChanged { _, _, _, _ ->
             binding.tvError.visibility = View.GONE
@@ -151,12 +148,150 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     remindBefore = selectedRemindBefore,
                     description = binding.edtTaskDescription.text.toString()
                 )
-                todoListViewModel.insertTask(task)
+                if (isCreate) {
+                    todoListViewModel.insertTask(task)
+                } else {
+                    todoListViewModel.updateTask(
+                        task = task.copy(
+                            id = taskId
+                        )
+                    ).also {
+                        this.dismiss()
+                    }
+                }
             }
         }
     }
 
-    private fun setUpDateAndRepetition() {
+    private fun handleDataEdit(task: Task?) {
+        this.task = task
+        this.task?.let { editingTask ->
+            binding.edtTaskName.text.append(editingTask.name)
+
+            binding.edtTaskDescription.text.append(editingTask.description)
+
+            selectedDate = editingTask.dueDate
+
+            editingTask.deadline?.let { deadline ->
+                selectedTime = deadline
+            }
+            editingTask.remindBefore?.let { remindBefore ->
+                selectedRemindBefore = remindBefore
+            }
+
+            editingTask.category?.let { category ->
+                selectedCategory = category
+            }
+
+            selectedPriority = editingTask.priority
+
+            editingTask.remindOptions?.let { remindOptions ->
+                selectedMode = remindOptions.mode
+                context?.let { ctx ->
+                    when (remindOptions.mode) {
+                        RemindOptions.RemindMode.DAILY -> {
+                            val intervalValues =
+                                ctx.resources.getStringArray(R.array.interval_daily)
+
+                            val endValues = ctx.resources.getStringArray(R.array.end_daily)
+
+                            updateSelectedIntervalAndEndInt(
+                                intervalValues,
+                                endValues,
+                                remindOptions.interval,
+                                remindOptions.endInt,
+                                ctx
+                            )
+                        }
+                        RemindOptions.RemindMode.WEEKLY -> {
+                            val intervalValues =
+                                ctx.resources.getStringArray(R.array.interval_weekly)
+
+                            val endValues = ctx.resources.getStringArray(R.array.end_weekly)
+
+                            updateSelectedIntervalAndEndInt(
+                                intervalValues,
+                                endValues,
+                                remindOptions.interval,
+                                remindOptions.endInt,
+                                ctx
+                            )
+
+                            editingTask.remindOptions?.repeatInWeek?.let { repeatInWeek ->
+                                selectedRepeatInWeek.clear()
+                                selectedRepeatInWeek.addAll(repeatInWeek)
+                            }
+                        }
+                        RemindOptions.RemindMode.MONTHLY -> {
+                            val intervalValues =
+                                ctx.resources.getStringArray(R.array.interval_monthly)
+
+                            val endValues = ctx.resources.getStringArray(R.array.end_monthly)
+
+                            updateSelectedIntervalAndEndInt(
+                                intervalValues,
+                                endValues,
+                                remindOptions.interval,
+                                remindOptions.endInt,
+                                ctx
+                            )
+
+                            val repeatInMonthlyValues =
+                                ctx.resources.getStringArray(R.array.repeat_in_monthly)
+                            repeatInMonthlyValues.let { repeatInMonthly ->
+                                repeatInMonthly.forEach { repeatIn ->
+                                    if (repeatIn.getDay() == editingTask.remindOptions?.repeatInMonth) {
+                                        selectedRepeatIn = repeatIn
+                                    }
+                                }
+                            }
+                        }
+                        else -> {
+                            // do nothing
+                        }
+                    }
+                }
+            }
+
+            initViews(true)
+        }
+    }
+
+    private fun updateSelectedIntervalAndEndInt(
+        intervalValues: Array<String>,
+        endValues: Array<String>,
+        interval: Int?,
+        endInt: Int?,
+        ctx: Context
+    ) {
+        intervalValues.let { intervals ->
+            intervals.forEach {
+                if (it.convertToDays(ctx) == interval) {
+                    selectedInterval = it
+                }
+            }
+        }
+
+        endValues.let { ends ->
+            ends.forEach { end ->
+                if (end.convertToDays(ctx) == endInt) {
+                    selectedEndInt = end
+                }
+            }
+        }
+    }
+
+    private fun initViews(isEdit: Boolean = false) {
+        setUpDateAndRepetition(isEdit)
+
+        setUpCategory(isEdit)
+
+        setUpPriority(isEdit)
+
+        setUpReminder(isEdit)
+    }
+
+    private fun setUpDateAndRepetition(isEdit: Boolean = false) {
 
         val datePickerDialog =
             DatePickerDialog(
@@ -164,6 +299,13 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 layoutDatePickerBinding,
                 layoutRepeatOptionsBinding
             )
+        if (isEdit) {
+            updateSelectedDayText(
+                Calendar.getInstance().apply {
+                    this.timeInMillis = selectedDate
+                }
+            )
+        }
 
         binding.btnDay.setOnClickListener {
 
@@ -193,7 +335,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setUpCategory() {
+    private fun setUpCategory(isEdit: Boolean = false) {
         context?.let { ctx ->
             val items =
                 mutableListOf("No Category", "Work", "Personal", "Favorite", "Create new category")
@@ -201,6 +343,17 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             binding.spinnerCategory.adapter = categorySpinnerAdapter
 
             var lastSelectedPosition = -1
+
+            if (isEdit) {
+                selectedCategory?.let { category ->
+                    binding.spinnerCategory.setSelection(
+                        items.indexOf(category).also { index ->
+                            lastSelectedPosition = index
+                        }
+                    )
+                }
+            }
+
             binding.spinnerCategory.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
                     // Manually invoke onItemSelected when the same item is selected again
@@ -233,7 +386,7 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setUpPriority() {
+    private fun setUpPriority(isEdit: Boolean = false) {
         val priorityValues = resources.getStringArray(R.array.priority_values)
         val priorityResources = arrayOf(
             R.drawable.ic_none_priority,
@@ -270,11 +423,30 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 // do nothing
             }
         }
+
+        if (isEdit) {
+            when (selectedPriority) {
+                TaskPriority.LOW -> {
+                    binding.spinnerPriority.setSelection(1)
+                }
+                TaskPriority.MEDIUM -> {
+                    binding.spinnerPriority.setSelection(2)
+                }
+                TaskPriority.HIGH -> {
+                    binding.spinnerPriority.setSelection(3)
+                }
+                else -> {
+                    binding.spinnerPriority.setSelection(0)
+                }
+            }
+        }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun setUpReminder() {
+    private fun setUpReminder(isEdit: Boolean = false) {
         val reminderDialog = ReminderDialog(context ?: return, layoutTimePickerBinding)
+        if (isEdit) {
+            setUpViewBtnReminder()
+        }
         binding.btnReminder.setOnClickListener {
             reminderDialog.handleSetUpReminder(
                 currentTime = selectedTime,
@@ -282,40 +454,45 @@ class CreateTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             ) { time, remindBefore ->
                 selectedTime = time
                 selectedRemindBefore = remindBefore
-                if (selectedRemindBefore > 0) {
-                    binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
-                        resources.getDrawable(
-                            R.drawable.ic_alarm_on,
-                            null
-                        ),
-                        null, null, null
-                    )
-                    binding.btnReminder.text = getString(
-                        R.string.text_remind_before_format,
-                        if (selectedRemindBefore < 60) {
-                            selectedRemindBefore.toString()
-                        } else {
-                            (selectedRemindBefore / 60).toString()
-                        },
-                        if (selectedRemindBefore < 60) {
-                            getString(R.string.text_minutes)
-                        } else if (selectedRemindBefore == 60) {
-                            getString(R.string.text_hour)
-                        } else {
-                            getString(R.string.text_hours)
-                        }
-                    )
-                } else {
-                    binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
-                        resources.getDrawable(
-                            R.drawable.ic_alarm,
-                            null
-                        ),
-                        null, null, null
-                    )
-                    binding.btnReminder.text = getString(R.string.text_reminder)
-                }
+                setUpViewBtnReminder()
             }
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun setUpViewBtnReminder() {
+        if (selectedRemindBefore > 0) {
+            binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
+                resources.getDrawable(
+                    R.drawable.ic_alarm_on,
+                    null
+                ),
+                null, null, null
+            )
+            binding.btnReminder.text = getString(
+                R.string.text_remind_before_format,
+                if (selectedRemindBefore < 60) {
+                    selectedRemindBefore.toString()
+                } else {
+                    (selectedRemindBefore / 60).toString()
+                },
+                if (selectedRemindBefore < 60) {
+                    getString(R.string.text_minutes)
+                } else if (selectedRemindBefore == 60) {
+                    getString(R.string.text_hour)
+                } else {
+                    getString(R.string.text_hours)
+                }
+            )
+        } else {
+            binding.btnReminder.setCompoundDrawablesWithIntrinsicBounds(
+                resources.getDrawable(
+                    R.drawable.ic_alarm,
+                    null
+                ),
+                null, null, null
+            )
+            binding.btnReminder.text = getString(R.string.text_reminder)
         }
     }
 

@@ -25,14 +25,14 @@ import com.chpham.pomodoro_todo.todo.ui.adapter.CategoriesAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.TasksAndHeadersAdapter
 import com.chpham.pomodoro_todo.todo.ui.adapter.swipe.DragAndSwipeCallback
-import com.chpham.pomodoro_todo.todo.ui.dialog.CreateTaskBottomSheetDialogFragment
+import com.chpham.pomodoro_todo.todo.ui.dialog.CreateOrEditTaskBottomSheetDialogFragment
 import com.chpham.pomodoro_todo.todo.viewmodel.TodoListViewModel
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_DONE
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_IN_PROGRESS
 import com.chpham.pomodoro_todo.utils.Constants.HEADER_TODO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Collections
+import java.util.*
 
 @AndroidEntryPoint
 class TodoListFragment :
@@ -50,7 +50,7 @@ class TodoListFragment :
     private lateinit var next7DaysTasksAdapter: TasksAdapter
     private lateinit var categoriesAdapter: CategoriesAdapter
 
-    private var bottomSheetDialogFragment: CreateTaskBottomSheetDialogFragment? = null
+    private var bottomSheetDialogFragment: CreateOrEditTaskBottomSheetDialogFragment? = null
 
     private val todoListViewModel: TodoListViewModel by activityViewModels()
 
@@ -103,11 +103,11 @@ class TodoListFragment :
         initData()
         initClickListener()
         binding.fabAddTask.setOnClickListener {
-            bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment.newInstance(
+            bottomSheetDialogFragment = CreateOrEditTaskBottomSheetDialogFragment.newInstance(
                 isCreate = true
             )
             activity?.supportFragmentManager?.let {
-                bottomSheetDialogFragment?.show(it, CreateTaskBottomSheetDialogFragment.TAG)
+                bottomSheetDialogFragment?.show(it, CreateOrEditTaskBottomSheetDialogFragment.TAG)
             }
         }
     }
@@ -178,15 +178,15 @@ class TodoListFragment :
                 holder: TasksAndHeadersAdapter.TaskViewHolder,
                 task: Task
             ) {
-                Log.e("ChienNgan", "onEditTaskClicked")
-                val bottomSheetDialogFragment = CreateTaskBottomSheetDialogFragment.newInstance(
-                    isCreate = false,
-                    taskId = task.id
-                )
+                val bottomSheetDialogFragment =
+                    CreateOrEditTaskBottomSheetDialogFragment.newInstance(
+                        isCreate = false,
+                        taskId = task.id
+                    )
                 activity?.supportFragmentManager?.let {
                     bottomSheetDialogFragment.show(
                         it,
-                        CreateTaskBottomSheetDialogFragment.TAG
+                        CreateOrEditTaskBottomSheetDialogFragment.TAG
                     )
                 }
             }

@@ -116,7 +116,7 @@ class TodoListFragment :
 
     private fun initData() {
         todoListViewModel.getYesterdayTasks()
-        todoListViewModel.getTodayTasks(categoryFilter)
+        todoListViewModel.getTodayTasks()
         todoListViewModel.getNext7DaysTasks()
     }
 
@@ -145,7 +145,7 @@ class TodoListFragment :
     }
 
     private fun updateTaskBySelectedCategory() {
-        todoListViewModel.getTodayTasks(categoryFilter)
+        displayTodayTasks(todoListViewModel.todayTasks.value)
     }
 
     private fun initPreviousTasksRecyclerView() {
@@ -282,29 +282,9 @@ class TodoListFragment :
             }
             previousTasksAdapter.differ.submitList(it)
         }
-        todoListViewModel.todayTasks.observe(viewLifecycleOwner) { tasks ->
-            if (tasks.isNullOrEmpty()) {
-                binding.tvEmptyTasks.visibility = View.VISIBLE
-                binding.animEmptyTasks.visibility = View.VISIBLE
-            } else {
-                binding.tvEmptyTasks.visibility = View.GONE
-                binding.animEmptyTasks.visibility = View.GONE
 
-                val todoTasks = tasks.filter { it?.state == TaskState.TO_DO }
-                val inProgressTasks = tasks.filter { it?.state == TaskState.IN_PROGRESS }
-                val doneTasks = tasks.filter { it?.state == TaskState.DONE }
+        observeTodayTasks()
 
-                val tasksAndHeader = mutableListOf<Pair<Task?, String?>>()
-                tasksAndHeader.add(Pair(null, HEADER_TODO))
-                tasksAndHeader.addAll(todoTasks.map { Pair(it, null) })
-                tasksAndHeader.add(Pair(null, HEADER_IN_PROGRESS))
-                tasksAndHeader.addAll(inProgressTasks.map { Pair(it, null) })
-                tasksAndHeader.add(Pair(null, HEADER_DONE))
-                tasksAndHeader.addAll(doneTasks.map { Pair(it, null) })
-
-                todayTasksAdapter.differ.submitList(tasksAndHeader)
-            }
-        }
         todoListViewModel.next7DaysTasks.observe(viewLifecycleOwner) {
             if (it.isNullOrEmpty()) {
                 binding.tvFuture.visibility = View.GONE
@@ -318,6 +298,44 @@ class TodoListFragment :
             categoriesAdapter.differ.submitList(categories)
         }.also {
             todoListViewModel.getCategories()
+        }
+    }
+
+    private fun observeTodayTasks() {
+        todoListViewModel.todayTasks.observe(viewLifecycleOwner) { tasks ->
+            displayTodayTasks(tasks)
+        }
+    }
+
+    private fun displayTodayTasks(tasks: List<Task?>?) {
+        var displayTasks = tasks
+
+        if (categoryFilter != "All") {
+            displayTasks = tasks?.filter {
+                it?.category == categoryFilter
+            }
+        }
+
+        if (displayTasks.isNullOrEmpty()) {
+            binding.tvEmptyTasks.visibility = View.VISIBLE
+            binding.animEmptyTasks.visibility = View.VISIBLE
+        } else {
+            binding.tvEmptyTasks.visibility = View.GONE
+            binding.animEmptyTasks.visibility = View.GONE
+
+            val todoTasks = displayTasks.filter { it?.state == TaskState.TO_DO }
+            val inProgressTasks = displayTasks.filter { it?.state == TaskState.IN_PROGRESS }
+            val doneTasks = displayTasks.filter { it?.state == TaskState.DONE }
+
+            val tasksAndHeader = mutableListOf<Pair<Task?, String?>>()
+            tasksAndHeader.add(Pair(null, HEADER_TODO))
+            tasksAndHeader.addAll(todoTasks.map { Pair(it, null) })
+            tasksAndHeader.add(Pair(null, HEADER_IN_PROGRESS))
+            tasksAndHeader.addAll(inProgressTasks.map { Pair(it, null) })
+            tasksAndHeader.add(Pair(null, HEADER_DONE))
+            tasksAndHeader.addAll(doneTasks.map { Pair(it, null) })
+
+            todayTasksAdapter.differ.submitList(tasksAndHeader)
         }
     }
 

@@ -32,8 +32,8 @@ class TodoListRepositoryImpl(
      * Gets all tasks.
      * @return A [Flow] emitting a list of all tasks by day, or an empty list if none exist.
      */
-    override fun getTasksByDayAndCategory(dueDate: Long, category: String?): Flow<List<Task?>> {
-        return taskLocalDataSource.getTasksByDayAndCategory(dueDate, category)
+    override fun getTasksByDay(dueDate: Long): Flow<List<Task?>> {
+        return taskLocalDataSource.getTasksByDay(dueDate)
     }
 
     /**

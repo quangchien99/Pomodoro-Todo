@@ -34,8 +34,8 @@ class TaskLocalDataSourceImpl(private val taskDao: TaskDao) : TaskLocalDataSourc
      * Returns a [Flow] emitting a list of all [Task] objects in the local database.
      * @return A [Flow] emitting a list of all [Task] objects in the local database.
      */
-    override fun getTasksByDayAndCategory(dueDate: Long, category: String?): Flow<List<Task?>> {
-        return taskDao.getTasksOfDay(dueDate, category).map { listTaskEntity ->
+    override fun getTasksByDay(dueDate: Long): Flow<List<Task?>> {
+        return taskDao.getTasksOfDay(dueDate).map { listTaskEntity ->
             listTaskEntity.map { taskEntity ->
                 taskEntity.toDomain()
             }

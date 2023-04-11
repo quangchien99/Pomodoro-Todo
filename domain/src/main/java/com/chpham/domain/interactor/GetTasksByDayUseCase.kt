@@ -2,7 +2,6 @@ package com.chpham.domain.interactor
 
 import com.chpham.domain.SingleUseCase
 import com.chpham.domain.SingleUseCaseWithParameter
-import com.chpham.domain.interactor.params.GetTaskByDayAndCategoryParams
 import com.chpham.domain.model.Task
 import com.chpham.domain.repository.TodoListRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,13 +18,13 @@ import kotlinx.coroutines.flow.Flow
  */
 class GetTasksByDayUseCase(
     private val todoListRepository: TodoListRepository
-) : SingleUseCaseWithParameter<GetTaskByDayAndCategoryParams, Flow<List<Task?>>> {
+) : SingleUseCaseWithParameter<Long, Flow<List<Task?>>> {
 
     /**
      * Executes the use case by calling the [TodoListRepository]'s [getTasksByDay] method and returns the result.
      * @return a [Flow] of [List] of nullable [Task] objects.
      */
-    override suspend fun execute(parameter: GetTaskByDayAndCategoryParams): Flow<List<Task?>> {
-        return todoListRepository.getTasksByDayAndCategory(parameter.day, parameter.category)
+    override suspend fun execute(parameter: Long): Flow<List<Task?>> {
+        return todoListRepository.getTasksByDay(parameter)
     }
 }

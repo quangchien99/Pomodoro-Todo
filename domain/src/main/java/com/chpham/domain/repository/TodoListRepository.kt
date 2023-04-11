@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface TodoListRepository {
 
     fun getTask(id: Int): Flow<Task?>
-    fun getTasksByDayAndCategory(dueDate: Long, category: String? = null): Flow<List<Task?>>
+    fun getTasksByDay(dueDate: Long): Flow<List<Task?>>
     fun getTasksInRange(startDate: Long, endDate: Long): Flow<List<Task?>>
 
     fun getTasks(): Flow<List<Task?>>

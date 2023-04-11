@@ -13,7 +13,6 @@ import com.chpham.domain.interactor.GetTasksInRangeUseCase
 import com.chpham.domain.interactor.InsertTaskUseCase
 import com.chpham.domain.interactor.SetTaskStateUseCase
 import com.chpham.domain.interactor.UpdateTaskUseCase
-import com.chpham.domain.interactor.params.GetTaskByDayAndCategoryParams
 import com.chpham.domain.interactor.params.GetTaskInRangeParams
 import com.chpham.domain.interactor.params.SetTaskStateParams
 import com.chpham.domain.model.Task
@@ -118,26 +117,18 @@ class TodoListViewModel @Inject constructor(
     fun getYesterdayTasks() {
         viewModelScope.launch {
             getTasksByDayUseCase.execute(
-                GetTaskByDayAndCategoryParams(
-                    yesterdayDate
-                )
+                yesterdayDate
             ).collect { tasks ->
                 _yesterdayTasks.value = tasks
             }
         }
     }
 
-    fun getTodayTasks(category: String) {
+    fun getTodayTasks() {
         viewModelScope.launch {
             getTasksByDayUseCase.execute(
-                GetTaskByDayAndCategoryParams(
-                    todayDate,
-                    if (category != "All") {
-                        category
-                    } else {
-                        null
-                    }
-                )
+                todayDate
+
             ).collect { tasks ->
                 _todayTasks.value = tasks
             }

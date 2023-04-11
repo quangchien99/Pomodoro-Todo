@@ -1,11 +1,16 @@
 package com.chpham.pomodoro_todo.di
 
-import com.chpham.data.database.dao.TaskDao
-import com.chpham.data.database.localdatasource.TaskLocalDataSource
-import com.chpham.data.database.localdatasource.TaskLocalDataSourceImpl
+import android.content.Context
+import android.content.SharedPreferences
+import com.chpham.data.local.database.dao.TaskDao
+import com.chpham.data.local.localdatasource.TaskLocalDataSource
+import com.chpham.data.local.localdatasource.TaskLocalDataSourceImpl
+import com.chpham.data.local.preferences.SharedPreferencesDataSource
+import com.chpham.data.local.preferences.SharedPreferencesDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -32,4 +37,15 @@ object LocalDataSourceModule {
     fun provideTaskLocalDataSource(
         taskDao: TaskDao
     ): TaskLocalDataSource = TaskLocalDataSourceImpl(taskDao)
+
+    /**
+     * Provides a singleton instance of [SharedPreferences] interface.
+     * @param context an instance of [Context] used to access shared preferences.
+     * @return a singleton instance of [SharedPreferences] interface.
+     */
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(
+        @ApplicationContext context: Context
+    ): SharedPreferencesDataSource = SharedPreferencesDataSourceImpl(context)
 }

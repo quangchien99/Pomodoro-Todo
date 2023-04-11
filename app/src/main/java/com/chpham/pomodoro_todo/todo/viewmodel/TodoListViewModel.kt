@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chpham.data.local.preferences.SharedPreferencesDataSource
 import com.chpham.domain.interactor.DeleteTaskUseCase
 import com.chpham.domain.interactor.GetAllTasksUseCase
 import com.chpham.domain.interactor.GetTaskByIdUseCase
@@ -12,6 +13,7 @@ import com.chpham.domain.interactor.GetTasksInRangeUseCase
 import com.chpham.domain.interactor.InsertTaskUseCase
 import com.chpham.domain.interactor.SetTaskStateUseCase
 import com.chpham.domain.interactor.UpdateTaskUseCase
+import com.chpham.domain.interactor.params.GetTaskByDayAndCategoryParams
 import com.chpham.domain.interactor.params.GetTaskInRangeParams
 import com.chpham.domain.interactor.params.SetTaskStateParams
 import com.chpham.domain.model.Task
@@ -45,7 +47,8 @@ class TodoListViewModel @Inject constructor(
     private val setTaskStateUseCase: SetTaskStateUseCase,
     private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val sharedPreferencesDataSource: SharedPreferencesDataSource
 ) : ViewModel() {
 
     private val calendar = Calendar.getInstance().apply {
@@ -89,6 +92,10 @@ class TodoListViewModel @Inject constructor(
     val next7DaysTasks: LiveData<List<Task?>>
         get() = _next7DaysTasks
 
+    private val _categories = MutableLiveData<List<String>>()
+    val categories: LiveData<List<String>>
+        get() = _categories
+
     init {
         _state.value = ViewModelState.LOADING
     }
@@ -111,17 +118,26 @@ class TodoListViewModel @Inject constructor(
     fun getYesterdayTasks() {
         viewModelScope.launch {
             getTasksByDayUseCase.execute(
-                yesterdayDate
+                GetTaskByDayAndCategoryParams(
+                    yesterdayDate
+                )
             ).collect { tasks ->
                 _yesterdayTasks.value = tasks
             }
         }
     }
 
-    fun getTodayTasks() {
+    fun getTodayTasks(category: String) {
         viewModelScope.launch {
             getTasksByDayUseCase.execute(
-                todayDate
+                GetTaskByDayAndCategoryParams(
+                    todayDate,
+                    if (category != "All") {
+                        category
+                    } else {
+                        null
+                    }
+                )
             ).collect { tasks ->
                 _todayTasks.value = tasks
             }
@@ -200,5 +216,14 @@ class TodoListViewModel @Inject constructor(
         viewModelScope.launch {
             deleteTaskUseCase.execute(taskId)
         }
+    }
+
+    fun insertCategory(category: String) {
+        sharedPreferencesDataSource.insertCategory(category)
+        _categories.value = sharedPreferencesDataSource.getCategories()
+    }
+
+    fun getCategories() {
+        _categories.value = sharedPreferencesDataSource.getCategories()
     }
 }

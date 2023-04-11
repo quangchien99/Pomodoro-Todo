@@ -1,11 +1,11 @@
-package com.chpham.data.database.dao
+package com.chpham.data.local.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.chpham.data.database.entity.TaskEntity
+import com.chpham.data.local.database.entity.TaskEntity
 import com.chpham.domain.model.TaskState
 import kotlinx.coroutines.flow.Flow
 
@@ -28,8 +28,8 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     fun getTask(id: Int): Flow<TaskEntity>
 
-    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate")
-    fun getTasksOfDay(dueDate: Long): Flow<List<TaskEntity>>
+    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate AND (:category IS NULL OR category = :category)")
+    fun getTasksOfDay(dueDate: Long, category: String? = null): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE dueDate BETWEEN :startDate AND :endDate")
     fun getTasksInRange(startDate: Long, endDate: Long): Flow<List<TaskEntity>>

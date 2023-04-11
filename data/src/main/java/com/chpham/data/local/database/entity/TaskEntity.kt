@@ -1,4 +1,4 @@
-package com.chpham.data.database.entity
+package com.chpham.data.local.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -77,6 +77,7 @@
     <string name="text_month">month</string>
     <string name="text_months">months</string>
     <string name="text_no_category">No Category</string>
+    <string name="text_create_new_category">Create new category</string>
     <!--    to do list fragment-->
 
 </resources>

@@ -1,10 +1,10 @@
-package com.chpham.data.database
+package com.chpham.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.chpham.data.database.dao.TaskDao
-import com.chpham.data.database.entity.TaskEntity
+import com.chpham.data.local.database.dao.TaskDao
+import com.chpham.data.local.database.entity.TaskEntity
 
 /**
  * A Room database for Pomotodo app that contains a single table for tasks.

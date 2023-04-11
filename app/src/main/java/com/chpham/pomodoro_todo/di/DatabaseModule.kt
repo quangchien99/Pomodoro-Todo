@@ -2,7 +2,7 @@ package com.chpham.pomodoro_todo.di
 
 import android.app.Application
 import androidx.room.Room
-import com.chpham.data.database.PomotodoDatabase
+import com.chpham.data.local.database.PomotodoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

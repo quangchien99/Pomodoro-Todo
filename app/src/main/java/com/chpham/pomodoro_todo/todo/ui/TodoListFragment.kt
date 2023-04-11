@@ -88,6 +88,8 @@ class TodoListFragment :
         }
     }
 
+    private var categoryFilter: String = "All"
+
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         return FragmentTodoBinding.inflate(layoutInflater, container, false)
     }
@@ -114,14 +116,17 @@ class TodoListFragment :
 
     private fun initData() {
         todoListViewModel.getYesterdayTasks()
-        todoListViewModel.getTodayTasks()
+        todoListViewModel.getTodayTasks(categoryFilter)
         todoListViewModel.getNext7DaysTasks()
     }
 
     private fun initCategoriesRecyclerView() {
         val categoryClickListener = object : CategoriesAdapter.CategoryClickListener {
             override fun onCategoryClick(category: String) {
-                Log.e("ChienNgan", "category Clicked")
+                if (category != categoryFilter) {
+                    categoryFilter = category
+                    updateTaskBySelectedCategory()
+                }
             }
         }
 
@@ -137,6 +142,10 @@ class TodoListFragment :
         binding.rcvCategories.doOnPreDraw {
             startPostponedEnterTransition()
         }
+    }
+
+    private fun updateTaskBySelectedCategory() {
+        todoListViewModel.getTodayTasks(categoryFilter)
     }
 
     private fun initPreviousTasksRecyclerView() {
@@ -253,7 +262,6 @@ class TodoListFragment :
     }
 
     private fun initObservers() {
-        val categories = mutableListOf<String>()
 
         todoListViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
@@ -306,14 +314,11 @@ class TodoListFragment :
             next7DaysTasksAdapter.differ.submitList(it)
         }
 
-        categories.add("All")
-        categories.add("Study")
-        categories.add("Family")
-        categories.add("Work")
-        categories.add("School")
-        categories.add("Love")
-        categories.add("Travel")
-        categoriesAdapter.differ.submitList(categories)
+        todoListViewModel.categories.observe(viewLifecycleOwner) { categories ->
+            categoriesAdapter.differ.submitList(categories)
+        }.also {
+            todoListViewModel.getCategories()
+        }
     }
 
     private fun initClickListener() {

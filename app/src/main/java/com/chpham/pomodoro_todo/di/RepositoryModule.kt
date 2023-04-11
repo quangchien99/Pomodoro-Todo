@@ -1,6 +1,6 @@
 package com.chpham.pomodoro_todo.di
 
-import com.chpham.data.database.localdatasource.TaskLocalDataSource
+import com.chpham.data.local.localdatasource.TaskLocalDataSource
 import com.chpham.data.repository.TodoListRepositoryImpl
 import com.chpham.domain.repository.TodoListRepository
 import dagger.Module

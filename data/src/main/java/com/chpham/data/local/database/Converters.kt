@@ -1,4 +1,4 @@
-package com.chpham.data.database
+package com.chpham.data.local.database
 
 import androidx.room.TypeConverter
 import com.chpham.domain.model.RemindOptions

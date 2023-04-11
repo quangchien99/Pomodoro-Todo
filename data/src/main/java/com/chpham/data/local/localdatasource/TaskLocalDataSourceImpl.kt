@@ -1,8 +1,8 @@
-package com.chpham.data.database.localdatasource
+package com.chpham.data.local.localdatasource
 
-import com.chpham.data.database.dao.TaskDao
-import com.chpham.data.database.mapper.TaskMapper.toDomain
-import com.chpham.data.database.mapper.TaskMapper.toEntity
+import com.chpham.data.local.database.dao.TaskDao
+import com.chpham.data.local.mapper.TaskMapper.toDomain
+import com.chpham.data.local.mapper.TaskMapper.toEntity
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
 import kotlinx.coroutines.flow.Flow
@@ -34,8 +34,8 @@ class TaskLocalDataSourceImpl(private val taskDao: TaskDao) : TaskLocalDataSourc
      * Returns a [Flow] emitting a list of all [Task] objects in the local database.
      * @return A [Flow] emitting a list of all [Task] objects in the local database.
      */
-    override fun getTasksByDay(dueDate: Long): Flow<List<Task?>> {
-        return taskDao.getTasksOfDay(dueDate).map { listTaskEntity ->
+    override fun getTasksByDayAndCategory(dueDate: Long, category: String?): Flow<List<Task?>> {
+        return taskDao.getTasksOfDay(dueDate, category).map { listTaskEntity ->
             listTaskEntity.map { taskEntity ->
                 taskEntity.toDomain()
             }

@@ -1,5 +1,7 @@
 package com.chpham.pomodoro_todo.todo.ui.adapter
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -19,6 +21,8 @@ import com.chpham.pomodoro_todo.databinding.ItemCategoryBinding
  */
 class CategoriesAdapter(private val categoryClickListener: CategoryClickListener) :
     RecyclerView.Adapter<CategoriesAdapter.ViewHolder>() {
+
+    private var selectedCategory: String = "All"
 
     val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
@@ -60,10 +64,20 @@ class CategoriesAdapter(private val categoryClickListener: CategoryClickListener
          * Binds the category data to the views.
          * @param category The task to bind to the views.
          */
+        @SuppressLint("ResourceAsColor", "NotifyDataSetChanged")
         fun bind(category: String) {
             binding.tvCategory.text = category
+            if (selectedCategory == category) {
+                binding.cardViewItemCategory.setCardBackgroundColor(Color.BLUE)
+                binding.tvCategory.setBackgroundColor(Color.BLUE)
+            } else {
+                binding.cardViewItemCategory.setCardBackgroundColor(Color.GRAY)
+                binding.tvCategory.setBackgroundColor(Color.GRAY)
+            }
             binding.cardViewItemCategory.setOnClickListener {
                 categoryClickListener.onCategoryClick(category)
+                selectedCategory = category
+                notifyDataSetChanged()
             }
         }
     }

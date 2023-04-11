@@ -1,6 +1,6 @@
-package com.chpham.data.database.mapper
+package com.chpham.data.local.mapper
 
-import com.chpham.data.database.entity.TaskEntity
+import com.chpham.data.local.database.entity.TaskEntity
 import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.Task
 

@@ -64,6 +64,9 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     // Get a reference to the parent fragment's view model
     private val todoListViewModel: TodoListViewModel by activityViewModels()
 
+    private var shouldUpdateCategory = true
+    private val categories: MutableList<String> = mutableListOf()
+
     companion object {
         const val TAG = "CreateTaskBottomSheetDialogFragment"
         private const val ARG_IS_CREATE = "is_create"
@@ -109,11 +112,13 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         if (isCreate) {
             binding.tvHeader.text = getString(R.string.text_add_task)
             initViews()
+            observeCategories()
         } else {
             binding.tvHeader.text = getString(R.string.text_edit_task)
             taskId = arguments?.getInt(ARG_TASK_ID) ?: -1
             todoListViewModel.getTaskById(taskId).observe(viewLifecycleOwner) {
                 handleDataEdit(it)
+                observeCategories()
             }
         }
 
@@ -159,6 +164,17 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                         this.dismiss()
                     }
                 }
+            }
+        }
+    }
+
+    private fun observeCategories() {
+        todoListViewModel.categories.observe(viewLifecycleOwner) { categories ->
+            this.categories.clear()
+            this.categories.addAll(categories)
+            if (shouldUpdateCategory) {
+                setUpCategory(!isCreate)
+                shouldUpdateCategory = false
             }
         }
     }
@@ -284,8 +300,6 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private fun initViews(isEdit: Boolean = false) {
         setUpDateAndRepetition(isEdit)
 
-        setUpCategory(isEdit)
-
         setUpPriority(isEdit)
 
         setUpReminder(isEdit)
@@ -338,7 +352,12 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private fun setUpCategory(isEdit: Boolean = false) {
         context?.let { ctx ->
             val items =
-                mutableListOf("No Category", "Work", "Personal", "Favorite", "Create new category")
+                mutableListOf(
+                    ctx.getString(R.string.text_no_category),
+                    ctx.getString(R.string.text_create_new_category)
+                )
+            items.addAll(1, categories)
+            items.remove("All")
             val categorySpinnerAdapter = CategorySpinnerAdapter(ctx, items)
             binding.spinnerCategory.adapter = categorySpinnerAdapter
 
@@ -375,7 +394,7 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     id: Long
                 ) {
                     val selectedItem = items[position]
-                    if (selectedItem == "Create new category") {
+                    if (selectedItem == ctx.getString(R.string.text_create_new_category)) {
                         showAddCategoryDialog(ctx, categorySpinnerAdapter)
                     }
                     selectedCategory = selectedItem
@@ -517,6 +536,7 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     categoryName
                 )
             )
+            todoListViewModel.insertCategory(categoryName)
             selectedCategory = categoryName
             dialog.dismiss()
         }

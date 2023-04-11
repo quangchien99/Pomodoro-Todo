@@ -1,4 +1,4 @@
-package com.chpham.data.database.localdatasource
+package com.chpham.data.local.localdatasource
 
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
@@ -25,7 +25,7 @@ interface TaskLocalDataSource {
      * Returns a [Flow] emitting a list of all [Task] objects in the local database.
      * @return A [Flow] emitting a list of all [Task] objects in the local database.
      */
-    fun getTasksByDay(dueDate: Long): Flow<List<Task?>>
+    fun getTasksByDayAndCategory(dueDate: Long, category: String? = null): Flow<List<Task?>>
 
     /**
      * Returns a [Flow] emitting a list of all [Task] objects in the local database.

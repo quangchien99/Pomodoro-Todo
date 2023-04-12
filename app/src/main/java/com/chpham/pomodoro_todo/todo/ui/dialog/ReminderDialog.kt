@@ -1,6 +1,8 @@
 package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.content.Context
+import android.util.Log
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.chpham.pomodoro_todo.R
@@ -58,11 +60,16 @@ class ReminderDialog(
 
         with(layoutTimePickerBinding) {
             timerPicker.setOnTimeChangedListener { _, hourOfDay, minute ->
+                val currentTime = System.currentTimeMillis()
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
                 calendar.set(Calendar.SECOND, 0)
-
-                selectedTime = calendar.timeInMillis
+                if (calendar.timeInMillis >= currentTime + 10 * 60 * 1000) {
+                    tvErrorTimer.visibility = View.GONE
+                    selectedTime = calendar.timeInMillis
+                } else {
+                    tvErrorTimer.visibility = View.VISIBLE
+                }
             }
 
             setReminderClickListener(tvNone, 0)
@@ -88,8 +95,21 @@ class ReminderDialog(
             }
 
             btnConfirm.setOnClickListener {
-                reminderAlertDialog.dismiss()
-                remindResultHandler.invoke(selectedTime, selectedRemindBefore)
+                if (switchReminder.isChecked) {
+                    val currentTimeInMillis = System.currentTimeMillis()
+                    val futureTimeInMillis = selectedTime - (selectedRemindBefore * 60 * 1000)
+                    if (selectedTime <= System.currentTimeMillis() + 10 * 60 * 1000) {
+                        layoutTimePickerBinding.tvErrorTimer.visibility = View.VISIBLE
+                    } else if (futureTimeInMillis <= currentTimeInMillis && selectedRemindBefore != 0) {
+                        layoutTimePickerBinding.tvErrorRemindBefore.visibility = View.VISIBLE
+                    } else {
+                        reminderAlertDialog.dismiss()
+                        remindResultHandler.invoke(selectedTime, selectedRemindBefore)
+                    }
+                } else {
+                    reminderAlertDialog.dismiss()
+                    remindResultHandler.invoke(selectedTime, selectedRemindBefore)
+                }
             }
         }
     }
@@ -118,11 +138,19 @@ class ReminderDialog(
 
     private fun setReminderClickListener(textView: TextView, minutes: Int) {
         textView.setOnClickListener {
-            unSelectPreviousOptions(selectedRemindBefore)
-            layoutTimePickerBinding.tvReminderValue.text = textView.text
-            textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
-            selectedRemindBefore = minutes
-            layoutTimePickerBinding.switchReminder.isChecked = minutes != 0
+            val currentTimeInMillis = System.currentTimeMillis()
+            val futureTimeInMillis = selectedTime - (minutes * 60 * 1000)
+            if (futureTimeInMillis >= currentTimeInMillis || minutes == 0) {
+                layoutTimePickerBinding.tvErrorRemindBefore.visibility = View.GONE
+                unSelectPreviousOptions(selectedRemindBefore)
+                layoutTimePickerBinding.tvReminderValue.text = textView.text
+                textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
+                selectedRemindBefore = minutes
+                layoutTimePickerBinding.switchReminder.isChecked = minutes != 0
+                Log.e("ChienNgan", "Set selectedRemindBefore= $selectedRemindBefore")
+            } else {
+                layoutTimePickerBinding.tvErrorRemindBefore.visibility = View.VISIBLE
+            }
         }
     }
 

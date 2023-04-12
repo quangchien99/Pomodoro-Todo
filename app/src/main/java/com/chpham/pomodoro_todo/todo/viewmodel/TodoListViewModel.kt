@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chpham.data.local.preferences.SharedPreferencesDataSource
+import com.chpham.domain.alarm.AlarmScheduler
 import com.chpham.domain.interactor.DeleteTaskUseCase
 import com.chpham.domain.interactor.GetAllTasksUseCase
 import com.chpham.domain.interactor.GetTaskByIdUseCase
@@ -15,10 +16,13 @@ import com.chpham.domain.interactor.SetTaskStateUseCase
 import com.chpham.domain.interactor.UpdateTaskUseCase
 import com.chpham.domain.interactor.params.GetTaskInRangeParams
 import com.chpham.domain.interactor.params.SetTaskStateParams
+import com.chpham.domain.model.AlarmItem
+import com.chpham.domain.model.RemindOptions
 import com.chpham.domain.model.Task
 import com.chpham.domain.model.TaskState
 import com.chpham.pomodoro_todo.base.viewmodel.ViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -47,7 +51,8 @@ class TodoListViewModel @Inject constructor(
     private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
-    private val sharedPreferencesDataSource: SharedPreferencesDataSource
+    private val sharedPreferencesDataSource: SharedPreferencesDataSource,
+    private val alarmScheduler: AlarmScheduler
 ) : ViewModel() {
 
     private val calendar = Calendar.getInstance().apply {
@@ -99,7 +104,7 @@ class TodoListViewModel @Inject constructor(
         _state.value = ViewModelState.LOADING
     }
 
-    fun setState(state: ViewModelState) {
+    private fun setState(state: ViewModelState) {
         _state.value = state
     }
 
@@ -150,14 +155,11 @@ class TodoListViewModel @Inject constructor(
      * @param taskId the ID of the task to load.
      * @return a LiveData of nullable [Task] object.
      */
-    fun getTaskById(taskId: Int): LiveData<Task?> {
-        val task = MutableLiveData<Task?>()
+    fun getTaskById(taskId: Int, callback: (Task?) -> Unit) {
         viewModelScope.launch {
-            getTaskByIdUseCase.execute(taskId).collect { taskValue ->
-                task.value = taskValue
-            }
+            val task = getTaskByIdUseCase.execute(taskId).firstOrNull()
+            callback(task)
         }
-        return task
     }
 
     /**
@@ -181,7 +183,7 @@ class TodoListViewModel @Inject constructor(
             viewModelScope.launch {
                 val result = insertTaskUseCase.execute(task)
                 if (result != null) {
-                    setState(ViewModelState.INSERT_SUCCEEDED)
+                    setState(ViewModelState.InsertSucceeded(result.toInt()))
                 } else {
                     setState(ViewModelState.ERROR)
                 }
@@ -216,5 +218,16 @@ class TodoListViewModel @Inject constructor(
 
     fun getCategories() {
         _categories.value = sharedPreferencesDataSource.getCategories()
+    }
+
+    fun createAlarm(id: Int, remindTime: Long, message: String, remindOptions: RemindOptions?) {
+        alarmScheduler.schedule(
+            AlarmItem(
+                id = id,
+                time = remindTime,
+                message = message,
+                remindOptions = remindOptions
+            )
+        )
     }
 }

@@ -8,10 +8,10 @@ package com.chpham.pomodoro_todo.base.viewmodel
  * @authoredBy Chien.Ph
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
-enum class ViewModelState {
-    INSERTING,
-    INSERT_SUCCEEDED,
-    LOADING,
-    SUCCESS,
-    ERROR
+sealed class ViewModelState {
+    object INSERTING : ViewModelState()
+    data class InsertSucceeded(val id: Int) : ViewModelState()
+    object LOADING : ViewModelState()
+    object SUCCESS : ViewModelState()
+    object ERROR : ViewModelState()
 }

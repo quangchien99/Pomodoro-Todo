@@ -116,7 +116,7 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         } else {
             binding.tvHeader.text = getString(R.string.text_edit_task)
             taskId = arguments?.getInt(ARG_TASK_ID) ?: -1
-            todoListViewModel.getTaskById(taskId).observe(viewLifecycleOwner) {
+            todoListViewModel.getTaskById(taskId) {
                 handleDataEdit(it)
                 observeCategories()
             }

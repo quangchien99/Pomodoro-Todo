@@ -26,20 +26,38 @@
         android:layout_marginEnd="@dimen/margin_16"
         android:checked="false" />
 
-    <TimePicker
-        android:id="@+id/timerPicker"
+    <LinearLayout
+        android:id="@+id/layoutTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/margin_20"
-        android:timePickerMode="spinner" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TimePicker
+            android:id="@+id/timerPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
+            android:timePickerMode="spinner" />
+
+        <TextView
+            android:id="@+id/tvErrorTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/deadline_must_be_greater_than_10_minutes_from_now"
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/timerPicker"
+        android:layout_below="@id/layoutTimer"
         android:layout_marginStart="@dimen/margin_60"
         android:layout_marginTop="@dimen/margin_20"
         android:drawablePadding="@dimen/padding_16"
@@ -52,7 +70,7 @@
         android:id="@+id/tvReminderValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/timerPicker"
+        android:layout_below="@id/layoutTimer"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="@dimen/margin_60"
         android:layout_marginTop="@dimen/margin_20"
@@ -173,20 +191,38 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <View
-        android:id="@+id/divider"
+    <LinearLayout
+        android:id="@+id/layoutDivider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/layoutSuggestion2"
-        android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_16"
-        android:background="#DDDDDD" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvErrorRemindBefore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_8"
+            android:text="@string/invalid_time_to_remind"
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:background="#DDDDDD" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/btnConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider"
+        android:layout_below="@id/layoutDivider"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/margin_20"
         android:layout_marginEnd="@dimen/margin_40"
@@ -199,7 +235,7 @@
         android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider"
+        android:layout_below="@id/layoutDivider"
         android:layout_marginTop="@dimen/margin_20"
         android:layout_marginEnd="@dimen/margin_20"
         android:layout_marginBottom="@dimen/margin_20"

@@ -132,6 +132,37 @@ class AlarmReceiver : BroadcastReceiver() {
                                     ),
                                 )
                             } else {
+                                val calendar =
+                                    getNextNearestDayMillis(remind.repeatInWeek, remind.interval)
+                                        ?: return
+
+                                if (calendar.timeInMillis - startDate > remind.endInt.toLong()) {
+                                    return
+                                }
+
+                                val timeHhSs = timeHhSs(timeRemind)
+                                calendar.apply {
+                                    set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
+                                    set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
+                                    set(Calendar.SECOND, 0)
+                                }
+                                alarmManager?.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    PendingIntent.getBroadcast(
+                                        context,
+                                        id,
+                                        getIntent(
+                                            context,
+                                            id,
+                                            message,
+                                            startDate,
+                                            timeRemind,
+                                            remindOptions
+                                        ),
+                                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                                    ),
+                                )
                             }
                         }
                         RemindOptions.RemindMode.MONTHLY -> {
@@ -170,7 +201,7 @@ class AlarmReceiver : BroadcastReceiver() {
         )
     }
 
-    fun timeHhSs(time: Long): String {
+    private fun timeHhSs(time: Long): String {
         val dateTime = Instant.ofEpochMilli(time)
             .atZone(ZoneId.systemDefault())
             .toLocalTime()
@@ -202,5 +233,50 @@ class AlarmReceiver : BroadcastReceiver() {
         return intent.apply {
             putExtras(bundle)
         }
+    }
+
+    private fun getNextNearestDayMillis(days: List<String>, interval: Int): Calendar? {
+        val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
+        // Step 1: Create a Calendar instance for today's date
+        val today = Calendar.getInstance()
+        today.timeInMillis = today.timeInMillis + 86400000L * interval
+
+        // Step 2: Convert each day in the list to a Calendar instance and set the time to 0:00:00
+        val calendars = mutableListOf<Calendar>()
+        for (day in days) {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.YEAR, today.get(Calendar.YEAR))
+            calendar.set(Calendar.MONTH, today.get(Calendar.MONTH))
+            calendar.set(Calendar.DATE, today.get(Calendar.DATE))
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+
+            val dayOfWeek = daysOfWeek.indexOf(day)
+            val todayDayOfWeek =
+                today.get(Calendar.DAY_OF_WEEK) - 1 // Sunday is 1, but we want 0-based index
+            val daysToAdd = (dayOfWeek - todayDayOfWeek + 7) % 7
+            if (daysToAdd > 0) { // If the day is in the future
+                calendar.add(Calendar.DATE, daysToAdd)
+            } else { // If the day is today or in the past, add a week to get the next occurrence
+                calendar.add(Calendar.DATE, daysToAdd + 7)
+            }
+            calendars.add(calendar)
+        }
+
+        // Step 3: Sort the list of Calendar instances in ascending order by time
+        calendars.sort()
+
+        // Step 4: Iterate over the sorted list and return the time in milliseconds for the first day that is in the future
+        for (calendar in calendars) {
+            if (calendar.after(today)) {
+                return calendar
+            }
+        }
+
+        // If no future day was found, return null or some default value
+        return null
     }
 }

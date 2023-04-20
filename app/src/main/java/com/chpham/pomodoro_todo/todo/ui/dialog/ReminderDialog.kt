@@ -1,7 +1,6 @@
 package com.chpham.pomodoro_todo.todo.ui.dialog
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -147,7 +146,6 @@ class ReminderDialog(
                 textView.setBackgroundResource(R.drawable.bg_btn_date_selected)
                 selectedRemindBefore = minutes
                 layoutTimePickerBinding.switchReminder.isChecked = minutes != 0
-                Log.e("ChienNgan", "Set selectedRemindBefore= $selectedRemindBefore")
             } else {
                 layoutTimePickerBinding.tvErrorRemindBefore.visibility = View.VISIBLE
             }

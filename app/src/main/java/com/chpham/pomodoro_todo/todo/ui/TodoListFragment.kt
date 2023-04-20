@@ -112,6 +112,10 @@ class TodoListFragment :
                 bottomSheetDialogFragment?.show(it, CreateOrEditTaskBottomSheetDialogFragment.TAG)
             }
         }
+
+        binding.imgMore.setOnClickListener {
+            // later
+        }
     }
 
     private fun initData() {
@@ -277,6 +281,7 @@ class TodoListFragment :
                                     id = task.id,
                                     remindTime = task.deadline!! - task.remindBefore!! * 60_000,
                                     message = task.name,
+                                    startDate = task.dueDate,
                                     remindOptions = task.remindOptions
                                 )
                             }

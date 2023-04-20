@@ -1,5 +1,8 @@
 package com.chpham.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * This is a data class called RemindOptions which defines various options for a reminder.
  * @property mode An enum property of type [RemindMode] which specifies the reminder mode. The default value is [RemindMode.UN_SPECIFIED].
@@ -19,13 +22,14 @@ package com.chpham.domain.model
  * @authoredBy Chien.Ph
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
+@Parcelize
 data class RemindOptions(
     val mode: RemindMode = RemindMode.UN_SPECIFIED,
     val interval: Int = -1,
     val repeatInMonth: Int = -1,
     val repeatInWeek: List<String> = emptyList(),
     val endInt: Int = -1
-) {
+) : Parcelable {
     enum class RemindMode {
         UN_SPECIFIED,
         DAILY,

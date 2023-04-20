@@ -220,12 +220,19 @@ class TodoListViewModel @Inject constructor(
         _categories.value = sharedPreferencesDataSource.getCategories()
     }
 
-    fun createAlarm(id: Int, remindTime: Long, message: String, remindOptions: RemindOptions?) {
+    fun createAlarm(
+        id: Int,
+        remindTime: Long,
+        message: String,
+        startDate: Long,
+        remindOptions: RemindOptions?
+    ) {
         alarmScheduler.schedule(
             AlarmItem(
                 id = id,
                 time = remindTime,
                 message = message,
+                startDate = startDate,
                 remindOptions = remindOptions
             )
         )

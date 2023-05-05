@@ -46,6 +46,8 @@ class AlarmSchedulerImpl(
             "Date= ${item.startDate} == ${formatTime(item.startDate)}, Remind time = ${item.time} == $timeString item= $item"
         )
 
+
+        Log.d("ChienNgan", "remind option= ${item.remindOptions}")
         val startDate = Calendar.getInstance()
         startDate.timeInMillis = item.startDate
         startDate.apply {

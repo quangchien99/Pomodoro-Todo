@@ -13,10 +13,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.chpham.domain.R
 import com.chpham.domain.model.RemindOptions
+import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
+import java.time.Month
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
+import java.util.*
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -68,7 +72,7 @@ class AlarmReceiver : BroadcastReceiver() {
             } else {
                 // Still in interval
                 val nextRemindTime = todayDate.timeInMillis + (remind.interval * MILLIS_A_DAY)
-                if (nextRemindTime - startDate <= remind.endInt.toLong()) {
+                if (nextRemindTime - startDate <= remind.endInt * MILLIS_A_DAY) {
 
                     val alarmManager =
                         context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
@@ -84,7 +88,10 @@ class AlarmReceiver : BroadcastReceiver() {
                                 set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
                                 set(Calendar.SECOND, 0)
                             }
-
+                            Log.e(
+                                "ChienNgan",
+                                "DAILY - next remind is ${formatTime(calendar.timeInMillis)}"
+                            )
                             alarmManager?.setExactAndAllowWhileIdle(
                                 AlarmManager.RTC_WAKEUP,
                                 calendar.timeInMillis,
@@ -113,7 +120,12 @@ class AlarmReceiver : BroadcastReceiver() {
                                     set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
                                     set(Calendar.SECOND, 0)
                                 }
-
+                                Log.e(
+                                    "ChienNgan",
+                                    "Weekly repeatInWeek empty - next remind is ${
+                                        formatTime(calendar.timeInMillis)
+                                    }"
+                                )
                                 alarmManager?.setExactAndAllowWhileIdle(
                                     AlarmManager.RTC_WAKEUP,
                                     calendar.timeInMillis,
@@ -136,7 +148,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                     getNextNearestDayMillis(remind.repeatInWeek, remind.interval)
                                         ?: return
 
-                                if (calendar.timeInMillis - startDate > remind.endInt.toLong()) {
+                                if (calendar.timeInMillis - startDate > remind.endInt * MILLIS_A_DAY) {
                                     return
                                 }
 
@@ -146,6 +158,10 @@ class AlarmReceiver : BroadcastReceiver() {
                                     set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
                                     set(Calendar.SECOND, 0)
                                 }
+                                Log.e(
+                                    "ChienNgan",
+                                    "Weekly - next remind is ${formatTime(calendar.timeInMillis)}"
+                                )
                                 alarmManager?.setExactAndAllowWhileIdle(
                                     AlarmManager.RTC_WAKEUP,
                                     calendar.timeInMillis,
@@ -166,6 +182,43 @@ class AlarmReceiver : BroadcastReceiver() {
                             }
                         }
                         RemindOptions.RemindMode.MONTHLY -> {
+                            val nextRemindDay = getTimeInMillisForDayOfMonth(
+                                remind.repeatInMonth,
+                                (remind.interval / 30).toLong()
+                            )
+                            if (nextRemindDay - startDate > remind.endInt * MILLIS_A_DAY) {
+                                return
+                            } else {
+                                val calendar = Calendar.getInstance()
+                                calendar.timeInMillis = nextRemindDay
+                                val timeHhSs = timeHhSs(timeRemind)
+                                calendar.apply {
+                                    set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
+                                    set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
+                                    set(Calendar.SECOND, 0)
+                                }
+                                Log.e(
+                                    "ChienNgan",
+                                    "MONTHLY - next remind is ${formatTime(calendar.timeInMillis)}"
+                                )
+                                alarmManager?.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    PendingIntent.getBroadcast(
+                                        context,
+                                        id,
+                                        getIntent(
+                                            context,
+                                            id,
+                                            message,
+                                            startDate,
+                                            timeRemind,
+                                            remindOptions
+                                        ),
+                                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                                    ),
+                                )
+                            }
                         }
                         else -> {
                             return
@@ -260,8 +313,10 @@ class AlarmReceiver : BroadcastReceiver() {
             val daysToAdd = (dayOfWeek - todayDayOfWeek + 7) % 7
             if (daysToAdd > 0) { // If the day is in the future
                 calendar.add(Calendar.DATE, daysToAdd)
+            } else if (daysToAdd == 0 && calendar.before(today)) { // If the day is today but in the past, add a week to get the next occurrence
+                calendar.add(Calendar.DATE, 7)
             } else { // If the day is today or in the past, add a week to get the next occurrence
-                calendar.add(Calendar.DATE, daysToAdd + 7)
+                calendar.add(Calendar.DATE, 7 - daysToAdd)
             }
             calendars.add(calendar)
         }
@@ -278,5 +333,29 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // If no future day was found, return null or some default value
         return null
+    }
+
+    private fun getTimeInMillisForDayOfMonth(dayOfMonth: Int, monthsToAdd: Long): Long {
+        val today = LocalDate.now()
+        val todayDate = today.dayOfMonth
+        var targetMonth = today.plusMonths(monthsToAdd).month
+        val targetYear = today.plusMonths(monthsToAdd).year
+        val lastDayOfMonth = targetMonth.length(today.isLeapYear)
+        val targetDayOfMonth = when {
+            dayOfMonth <= todayDate -> {
+                targetMonth = today.plusMonths(monthsToAdd + 1).month
+                dayOfMonth
+            }
+            dayOfMonth in (todayDate + 1)..lastDayOfMonth -> dayOfMonth
+            dayOfMonth > lastDayOfMonth -> lastDayOfMonth
+            else -> lastDayOfMonth
+        }
+        val targetDate = LocalDate.of(targetYear, targetMonth, targetDayOfMonth)
+        return targetDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+    }
+
+    private fun formatTime(timeInMillis: Long): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.getDefault())
+        return dateFormat.format(Date(timeInMillis))
     }
 }

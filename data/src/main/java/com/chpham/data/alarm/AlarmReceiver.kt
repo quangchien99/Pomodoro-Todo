@@ -26,6 +26,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
         private const val MILLIS_A_DAY = 86400000L
+        private const val INVALID_INT = -1
+        private const val INVALID_LONG = -1L
+        private const val ZERO_VALUE = 0
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -36,18 +39,18 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val message = intent?.getStringExtra(AlarmSchedulerImpl.MESSAGE) ?: return
 
-        val id = intent.getIntExtra(AlarmSchedulerImpl.ID, -1)
-        if (id == -1) {
+        val id = intent.getIntExtra(AlarmSchedulerImpl.ID, INVALID_INT)
+        if (id == INVALID_INT) {
             return
         }
 
-        val startDate = intent.getLongExtra(AlarmSchedulerImpl.START_DATE, -1L)
-        if (startDate == -1L) {
+        val startDate = intent.getLongExtra(AlarmSchedulerImpl.START_DATE, INVALID_LONG)
+        if (startDate == INVALID_LONG) {
             return
         }
 
-        val timeRemind = intent.getLongExtra(AlarmSchedulerImpl.TIME_REMIND, -1L)
-        if (timeRemind == -1L) {
+        val timeRemind = intent.getLongExtra(AlarmSchedulerImpl.TIME_REMIND, INVALID_LONG)
+        if (timeRemind == INVALID_LONG) {
             return
         }
 
@@ -60,9 +63,9 @@ class AlarmReceiver : BroadcastReceiver() {
         showNotification(context, message)
 
         val todayDate = Calendar.getInstance().apply {
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+            set(Calendar.MINUTE, ZERO_VALUE)
+            set(Calendar.SECOND, ZERO_VALUE)
+            set(Calendar.MILLISECOND, ZERO_VALUE)
         }
         Log.e("ChienNgan", "today Date= ${todayDate.timeInMillis}")
         Log.e("ChienNgan", "onReceive: startDate= $startDate, remind = $remindOptions")
@@ -86,7 +89,7 @@ class AlarmReceiver : BroadcastReceiver() {
                             calendar.apply {
                                 set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
                                 set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                set(Calendar.SECOND, 0)
+                                set(Calendar.SECOND, ZERO_VALUE)
                             }
                             Log.e(
                                 "ChienNgan",
@@ -118,7 +121,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                 calendar.apply {
                                     set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
                                     set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, 0)
+                                    set(Calendar.SECOND, ZERO_VALUE)
                                 }
                                 Log.e(
                                     "ChienNgan",
@@ -156,7 +159,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                 calendar.apply {
                                     set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
                                     set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, 0)
+                                    set(Calendar.SECOND, ZERO_VALUE)
                                 }
                                 Log.e(
                                     "ChienNgan",
@@ -195,7 +198,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                 calendar.apply {
                                     set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
                                     set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, 0)
+                                    set(Calendar.SECOND, ZERO_VALUE)
                                 }
                                 Log.e(
                                     "ChienNgan",
@@ -293,7 +296,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Step 1: Create a Calendar instance for today's date
         val today = Calendar.getInstance()
-        today.timeInMillis = today.timeInMillis + 86400000L * interval
+        today.timeInMillis = today.timeInMillis + MILLIS_A_DAY * interval
 
         // Step 2: Convert each day in the list to a Calendar instance and set the time to 0:00:00
         val calendars = mutableListOf<Calendar>()
@@ -302,10 +305,10 @@ class AlarmReceiver : BroadcastReceiver() {
             calendar.set(Calendar.YEAR, today.get(Calendar.YEAR))
             calendar.set(Calendar.MONTH, today.get(Calendar.MONTH))
             calendar.set(Calendar.DATE, today.get(Calendar.DATE))
-            calendar.set(Calendar.HOUR_OF_DAY, 0)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
+            calendar.set(Calendar.HOUR_OF_DAY, ZERO_VALUE)
+            calendar.set(Calendar.MINUTE, ZERO_VALUE)
+            calendar.set(Calendar.SECOND, ZERO_VALUE)
+            calendar.set(Calendar.MILLISECOND, ZERO_VALUE)
 
             val dayOfWeek = daysOfWeek.indexOf(day)
             val todayDayOfWeek =

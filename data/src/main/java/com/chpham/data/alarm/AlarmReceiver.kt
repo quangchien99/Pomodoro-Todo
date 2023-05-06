@@ -361,7 +361,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val lastDayOfMonth = targetMonth.length(today.isLeapYear)
         val targetDayOfMonth = when {
             dayOfMonth <= todayDate -> {
-                targetMonth = today.plusMonths(monthsToAdd + 1).month
+                targetMonth = today.plusMonths(monthsToAdd).month
                 dayOfMonth
             }
             dayOfMonth in (todayDate + 1)..lastDayOfMonth -> dayOfMonth

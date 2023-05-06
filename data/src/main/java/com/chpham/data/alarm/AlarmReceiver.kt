@@ -16,11 +16,12 @@ import com.chpham.domain.model.RemindOptions
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
-import java.time.Month
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import java.util.Date
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -60,7 +61,11 @@ class AlarmReceiver : BroadcastReceiver() {
             intent.getParcelableExtra(AlarmSchedulerImpl.REMIND_OPTION)
         }
 
-        showNotification(context, message)
+        val isUpdate = intent.getBooleanExtra(AlarmSchedulerImpl.IS_UPDATE, false)
+
+        if (!isUpdate) {
+            showNotification(context, message)
+        }
 
         val todayDate = Calendar.getInstance().apply {
             set(Calendar.MINUTE, ZERO_VALUE)
@@ -131,9 +136,9 @@ class AlarmReceiver : BroadcastReceiver() {
                             }
                             Log.e(
                                 "ChienNgan",
-                                "Weekly repeatInWeek empty - next remind is ${
-                                    formatTime(calendar.timeInMillis)
-                                }"
+                                "Weekly repeatInWeek empty - next remind is " + formatTime(
+                                    calendar.timeInMillis
+                                )
                             )
                             alarmManager?.setExactAndAllowWhileIdle(
                                 AlarmManager.RTC_WAKEUP,
@@ -241,7 +246,6 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
     }
-
 
     private fun showNotification(context: Context?, message: String) {
         val channelId = "QCPChannelId"

@@ -27,10 +27,11 @@ class AlarmSchedulerImpl(
         const val TIME_REMIND = "TIME_REMIND"
         const val ID = "ID"
         const val REMIND_OPTION = "REMIND_OPTION"
+        const val IS_UPDATE = "IS_UPDATE"
     }
 
     @SuppressLint("ShortAlarm")
-    override fun schedule(item: AlarmItem) {
+    override fun schedule(item: AlarmItem, isUpdate: Boolean) {
         val dateTime = Instant.ofEpochMilli(item.time)
             .atZone(ZoneId.systemDefault())
             .toLocalTime()
@@ -63,13 +64,13 @@ class AlarmSchedulerImpl(
             PendingIntent.getBroadcast(
                 context,
                 item.id,
-                getIntent(item),
+                getIntent(item, isUpdate),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             ),
         )
     }
 
-    private fun getIntent(item: AlarmItem): Intent {
+    private fun getIntent(item: AlarmItem, isUpdate: Boolean = false): Intent {
         val intent = Intent(context, AlarmReceiver::class.java)
 
         val bundle = Bundle().apply {
@@ -79,6 +80,9 @@ class AlarmSchedulerImpl(
             putLong(TIME_REMIND, item.time)
             item.remindOptions?.let {
                 putParcelable(REMIND_OPTION, it)
+            }
+            if (isUpdate) {
+                putBoolean(IS_UPDATE, true)
             }
         }
 

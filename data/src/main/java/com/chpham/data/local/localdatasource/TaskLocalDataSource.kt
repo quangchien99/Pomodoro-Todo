@@ -63,5 +63,5 @@ interface TaskLocalDataSource {
      * Updates the specified [Task] object in the local database.
      * @param task The [Task] object to update.
      */
-    suspend fun updateTask(task: Task)
+    suspend fun updateTask(task: Task): Long?
 }

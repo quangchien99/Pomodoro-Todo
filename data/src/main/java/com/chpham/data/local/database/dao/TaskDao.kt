@@ -69,5 +69,5 @@ interface TaskDao {
      * @param task The [TaskEntity] object to update in the local database.
      */
     @Update
-    suspend fun updateTask(task: TaskEntity)
+    suspend fun updateTask(task: TaskEntity): Long
 }

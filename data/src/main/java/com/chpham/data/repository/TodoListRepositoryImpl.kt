@@ -82,7 +82,7 @@ class TodoListRepositoryImpl(
      * Updates the specified [task] in the data source.
      * @param task The task to update.
      */
-    override suspend fun updateTask(task: Task) {
+    override suspend fun updateTask(task: Task): Long? {
         return taskLocalDataSource.updateTask(task)
     }
 }

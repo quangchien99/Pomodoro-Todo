@@ -73,16 +73,54 @@ class AlarmReceiver : BroadcastReceiver() {
             if (remind.mode == RemindOptions.RemindMode.UN_SPECIFIED) {
                 return
             } else {
-                // Still in interval
-                val nextRemindTime = todayDate.timeInMillis + (remind.interval * MILLIS_A_DAY)
-                if (nextRemindTime - startDate <= remind.endInt * MILLIS_A_DAY) {
+                val alarmManager =
+                    context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
 
-                    val alarmManager =
-                        context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                when (remind.mode) {
+                    RemindOptions.RemindMode.DAILY -> {
+                        val nextRemindTime =
+                            todayDate.timeInMillis + (remind.interval * MILLIS_A_DAY)
+                        if (nextRemindTime - startDate > remind.endInt * MILLIS_A_DAY) {
+                            return
+                        }
 
-                    when (remind.mode) {
-                        RemindOptions.RemindMode.DAILY -> {
-
+                        val timeHhSs = timeHhSs(timeRemind)
+                        val calendar = Calendar.getInstance()
+                        calendar.timeInMillis = nextRemindTime
+                        calendar.apply {
+                            set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
+                            set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
+                            set(Calendar.SECOND, ZERO_VALUE)
+                        }
+                        Log.e(
+                            "ChienNgan",
+                            "DAILY - next remind is ${formatTime(calendar.timeInMillis)}"
+                        )
+                        alarmManager?.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            PendingIntent.getBroadcast(
+                                context,
+                                id,
+                                getIntent(
+                                    context,
+                                    id,
+                                    message,
+                                    startDate,
+                                    timeRemind,
+                                    remindOptions
+                                ),
+                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                            ),
+                        )
+                    }
+                    RemindOptions.RemindMode.WEEKLY -> {
+                        if (remind.repeatInWeek.isEmpty()) {
+                            val nextRemindTime =
+                                todayDate.timeInMillis + (remind.interval * MILLIS_A_DAY)
+                            if (nextRemindTime - startDate > remind.endInt * MILLIS_A_DAY) {
+                                return
+                            }
                             val timeHhSs = timeHhSs(timeRemind)
                             val calendar = Calendar.getInstance()
                             calendar.timeInMillis = nextRemindTime
@@ -93,7 +131,45 @@ class AlarmReceiver : BroadcastReceiver() {
                             }
                             Log.e(
                                 "ChienNgan",
-                                "DAILY - next remind is ${formatTime(calendar.timeInMillis)}"
+                                "Weekly repeatInWeek empty - next remind is ${
+                                    formatTime(calendar.timeInMillis)
+                                }"
+                            )
+                            alarmManager?.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.timeInMillis,
+                                PendingIntent.getBroadcast(
+                                    context,
+                                    id,
+                                    getIntent(
+                                        context,
+                                        id,
+                                        message,
+                                        startDate,
+                                        timeRemind,
+                                        remindOptions
+                                    ),
+                                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                                ),
+                            )
+                        } else {
+                            val calendar =
+                                getNextNearestDayMillis(remind.repeatInWeek, remind.interval)
+                                    ?: return
+
+                            if (calendar.timeInMillis - startDate > remind.endInt * MILLIS_A_DAY) {
+                                return
+                            }
+
+                            val timeHhSs = timeHhSs(timeRemind)
+                            calendar.apply {
+                                set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
+                                set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
+                                set(Calendar.SECOND, ZERO_VALUE)
+                            }
+                            Log.e(
+                                "ChienNgan",
+                                "Weekly - next remind is ${formatTime(calendar.timeInMillis)}"
                             )
                             alarmManager?.setExactAndAllowWhileIdle(
                                 AlarmManager.RTC_WAKEUP,
@@ -113,126 +189,59 @@ class AlarmReceiver : BroadcastReceiver() {
                                 ),
                             )
                         }
-                        RemindOptions.RemindMode.WEEKLY -> {
-                            if (remind.repeatInWeek.isEmpty()) {
-                                val timeHhSs = timeHhSs(timeRemind)
-                                val calendar = Calendar.getInstance()
-                                calendar.timeInMillis = nextRemindTime
-                                calendar.apply {
-                                    set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
-                                    set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, ZERO_VALUE)
-                                }
-                                Log.e(
-                                    "ChienNgan",
-                                    "Weekly repeatInWeek empty - next remind is ${
-                                        formatTime(calendar.timeInMillis)
-                                    }"
-                                )
-                                alarmManager?.setExactAndAllowWhileIdle(
-                                    AlarmManager.RTC_WAKEUP,
-                                    calendar.timeInMillis,
-                                    PendingIntent.getBroadcast(
-                                        context,
-                                        id,
-                                        getIntent(
-                                            context,
-                                            id,
-                                            message,
-                                            startDate,
-                                            timeRemind,
-                                            remindOptions
-                                        ),
-                                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                                    ),
-                                )
-                            } else {
-                                val calendar =
-                                    getNextNearestDayMillis(remind.repeatInWeek, remind.interval)
-                                        ?: return
-
-                                if (calendar.timeInMillis - startDate > remind.endInt * MILLIS_A_DAY) {
-                                    return
-                                }
-
-                                val timeHhSs = timeHhSs(timeRemind)
-                                calendar.apply {
-                                    set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
-                                    set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, ZERO_VALUE)
-                                }
-                                Log.e(
-                                    "ChienNgan",
-                                    "Weekly - next remind is ${formatTime(calendar.timeInMillis)}"
-                                )
-                                alarmManager?.setExactAndAllowWhileIdle(
-                                    AlarmManager.RTC_WAKEUP,
-                                    calendar.timeInMillis,
-                                    PendingIntent.getBroadcast(
-                                        context,
-                                        id,
-                                        getIntent(
-                                            context,
-                                            id,
-                                            message,
-                                            startDate,
-                                            timeRemind,
-                                            remindOptions
-                                        ),
-                                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                                    ),
-                                )
-                            }
-                        }
-                        RemindOptions.RemindMode.MONTHLY -> {
-                            val nextRemindDay = getTimeInMillisForDayOfMonth(
-                                remind.repeatInMonth,
-                                (remind.interval / 30).toLong()
-                            )
-                            if (nextRemindDay - startDate > remind.endInt * MILLIS_A_DAY) {
-                                return
-                            } else {
-                                val calendar = Calendar.getInstance()
-                                calendar.timeInMillis = nextRemindDay
-                                val timeHhSs = timeHhSs(timeRemind)
-                                calendar.apply {
-                                    set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
-                                    set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
-                                    set(Calendar.SECOND, ZERO_VALUE)
-                                }
-                                Log.e(
-                                    "ChienNgan",
-                                    "MONTHLY - next remind is ${formatTime(calendar.timeInMillis)}"
-                                )
-                                alarmManager?.setExactAndAllowWhileIdle(
-                                    AlarmManager.RTC_WAKEUP,
-                                    calendar.timeInMillis,
-                                    PendingIntent.getBroadcast(
-                                        context,
-                                        id,
-                                        getIntent(
-                                            context,
-                                            id,
-                                            message,
-                                            startDate,
-                                            timeRemind,
-                                            remindOptions
-                                        ),
-                                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                                    ),
-                                )
-                            }
-                        }
-                        else -> {
+                    }
+                    RemindOptions.RemindMode.MONTHLY -> {
+                        val nextRemindTime =
+                            todayDate.timeInMillis + (remind.interval * MILLIS_A_DAY)
+                        if (nextRemindTime - startDate > remind.endInt * MILLIS_A_DAY) {
                             return
                         }
+                        val nextRemindDay = getTimeInMillisForDayOfMonth(
+                            remind.repeatInMonth,
+                            (remind.interval / 30).toLong()
+                        )
+                        if (nextRemindDay - startDate > remind.endInt * MILLIS_A_DAY) {
+                            return
+                        } else {
+                            val calendar = Calendar.getInstance()
+                            calendar.timeInMillis = nextRemindDay
+                            val timeHhSs = timeHhSs(timeRemind)
+                            calendar.apply {
+                                set(Calendar.HOUR_OF_DAY, timeHhSs.split(":")[0].toInt())
+                                set(Calendar.MINUTE, timeHhSs.split(":")[1].toInt())
+                                set(Calendar.SECOND, ZERO_VALUE)
+                            }
+                            Log.e(
+                                "ChienNgan",
+                                "MONTHLY - next remind is ${formatTime(calendar.timeInMillis)}"
+                            )
+                            alarmManager?.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.timeInMillis,
+                                PendingIntent.getBroadcast(
+                                    context,
+                                    id,
+                                    getIntent(
+                                        context,
+                                        id,
+                                        message,
+                                        startDate,
+                                        timeRemind,
+                                        remindOptions
+                                    ),
+                                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                                ),
+                            )
+                        }
                     }
-                } else {
-                    return
+                    else -> {
+                        return
+                    }
                 }
             }
         }
     }
+
 
     private fun showNotification(context: Context?, message: String) {
         val channelId = "QCPChannelId"
@@ -297,6 +306,12 @@ class AlarmReceiver : BroadcastReceiver() {
         // Step 1: Create a Calendar instance for today's date
         val today = Calendar.getInstance()
         today.timeInMillis = today.timeInMillis + MILLIS_A_DAY * interval
+
+        val dayINWeek = today.get(Calendar.DAY_OF_WEEK)
+        // If today is not a Monday, set the date to the Monday of the current week
+        if (dayINWeek != Calendar.MONDAY) {
+            today.add(Calendar.DAY_OF_WEEK, Calendar.MONDAY - dayINWeek)
+        }
 
         // Step 2: Convert each day in the list to a Calendar instance and set the time to 0:00:00
         val calendars = mutableListOf<Calendar>()

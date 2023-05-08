@@ -161,7 +161,20 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
                             id = taskId
                         )
                     ).also {
-                        this.dismiss()
+                        todoListViewModel.getTaskById(taskId) { taskOrNull ->
+                            taskOrNull?.let { updateTask ->
+                                if (task.deadline != updateTask.deadline || task.remindBefore != updateTask.remindBefore || task.remindOptions != updateTask.remindOptions) {
+                                    todoListViewModel.updateAlarm(
+                                        id = task.id,
+                                        remindTime = task.deadline!! - task.remindBefore!! * 60_000,
+                                        message = task.name,
+                                        startDate = task.dueDate,
+                                        remindOptions = task.remindOptions
+                                    )
+                                }
+                            }
+                            this.dismiss()
+                        }
                     }
                 }
             }
@@ -420,7 +433,12 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
         binding.spinnerPriority.adapter = adapterPrioritySpinner
         binding.spinnerPriority.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(adapter: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+            override fun onItemSelected(
+                adapter: AdapterView<*>?,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
                 // implement later
                 selectedPriority = when (pos) {
                     1 -> {
@@ -561,8 +579,12 @@ class CreateOrEditTaskBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
             else -> {
                 val selectedDate =
-                    "${selectedCalendar.get(Calendar.DAY_OF_MONTH)}/${selectedCalendar.get(Calendar.MONTH) + 1}/${
-                    selectedCalendar.get(Calendar.YEAR)
+                    "${selectedCalendar.get(Calendar.DAY_OF_MONTH)}/${
+                        selectedCalendar.get(
+                            Calendar.MONTH
+                        ) + 1
+                    }/${
+                        selectedCalendar.get(Calendar.YEAR)
                     }"
                 binding.btnDay.text = selectedDate
             }

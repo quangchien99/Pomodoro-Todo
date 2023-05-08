@@ -11,7 +11,6 @@ package com.chpham.pomodoro_todo.base.viewmodel
 sealed class ViewModelState {
     object INSERTING : ViewModelState()
     data class InsertSucceeded(val id: Int) : ViewModelState()
-    data class UpdateSucceeded(val id: Int) : ViewModelState()
     object LOADING : ViewModelState()
     object SUCCESS : ViewModelState()
     object ERROR : ViewModelState()

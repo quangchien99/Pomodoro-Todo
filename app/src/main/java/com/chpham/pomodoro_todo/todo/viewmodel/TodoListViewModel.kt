@@ -197,12 +197,7 @@ class TodoListViewModel @Inject constructor(
      */
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            val result = updateTaskUseCase.execute(task)
-            if (result != null) {
-                setState(ViewModelState.UpdateSucceeded(result.toInt()))
-            } else {
-                setState(ViewModelState.ERROR)
-            }
+            updateTaskUseCase.execute(task)
         }
     }
 
@@ -230,8 +225,7 @@ class TodoListViewModel @Inject constructor(
         remindTime: Long,
         message: String,
         startDate: Long,
-        remindOptions: RemindOptions?,
-        isUpdate: Boolean = false
+        remindOptions: RemindOptions?
     ) {
         alarmScheduler.schedule(
             AlarmItem(
@@ -260,13 +254,14 @@ class TodoListViewModel @Inject constructor(
                 remindOptions = remindOptions
             )
         )
-        createAlarm(
-            id = id,
-            remindTime = remindTime,
-            message = message,
-            startDate = startDate,
-            remindOptions = remindOptions,
-            isUpdate = true
-        )
+        if (remindOptions?.mode != null && remindOptions.mode != RemindOptions.RemindMode.UN_SPECIFIED) {
+            createAlarm(
+                id = id,
+                remindTime = remindTime,
+                message = message,
+                startDate = startDate,
+                remindOptions = remindOptions
+            )
+        }
     }
 }

@@ -14,14 +14,14 @@ import com.chpham.domain.repository.TodoListRepository
  * © copyright 2023 Chien.Ph. All rights reserved.
  */
 class UpdateTaskUseCase(private val todoListRepository: TodoListRepository) :
-    SingleUseCaseWithParameter<Task, Long?> {
+    SingleUseCaseWithParameter<Task, Unit?> {
 
     /**
      * Updates the specified task in the to-do list.
      *
      * @param parameter the task to update
      */
-    override suspend fun execute(parameter: Task): Long? {
+    override suspend fun execute(parameter: Task) {
         return todoListRepository.updateTask(parameter)
     }
 }

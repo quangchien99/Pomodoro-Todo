@@ -98,8 +98,8 @@ class TaskLocalDataSourceImpl(private val taskDao: TaskDao) : TaskLocalDataSourc
      * Updates the specified [Task] object in the local database.
      * @param task The [Task] object to update.
      */
-    override suspend fun updateTask(task: Task): Long? {
-        return task.toEntity()?.let {
+    override suspend fun updateTask(task: Task) {
+        task.toEntity()?.let {
             taskDao.updateTask(it)
         }
     }

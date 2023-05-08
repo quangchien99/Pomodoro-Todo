@@ -288,21 +288,6 @@ class TodoListFragment :
                         }
                     }
                 }
-                is ViewModelState.UpdateSucceeded -> {
-                    todoListViewModel.getTaskById(it.id) { taskOrNull ->
-                        taskOrNull?.let { task ->
-                            if (task.deadline != null && task.deadline!! > 0 && task.remindBefore != null && task.remindBefore!! > 0) {
-                                todoListViewModel.updateAlarm(
-                                    id = task.id,
-                                    remindTime = task.deadline!! - task.remindBefore!! * 60_000,
-                                    message = task.name,
-                                    startDate = task.dueDate,
-                                    remindOptions = task.remindOptions
-                                )
-                            }
-                        }
-                    }
-                }
                 else -> {
                     // do nothing yet
                 }
